@@ -122,7 +122,11 @@ public:
     // マッチング         
     int count=0;
     std_msgs::String hiragana_msg;
-    for (std::vector<template_data>::iterator pt = template_imgs.begin(); pt !=template_imgs.end(); pt++){
+    #pragma omp parallel for
+    // for  (std::vector<template_data>::iterator pt= template_imgs.begin(); pt !=template_imgs.end(); pt++){
+    for(int i=0; i< template_imgs.size(); i++){
+      //std::vector<template_data>::iterator pt = &template_imgs.at(i);
+      template_data *pt = &template_imgs.at(i);
       char window_name[16];
       // sprintf(window_name, "template%d",count+1);
       // if(!pt->img.empty()){
@@ -134,7 +138,8 @@ public:
       // 	return;
       // }
       
-      count++;                                     
+      int count = i;//count++;
+     
       std::vector<cv::DMatch> dmatch;
       matcher->match(pt->descriptor, inputdata_descriptor, dmatch);
       double max_dist=0, min_dist=50;

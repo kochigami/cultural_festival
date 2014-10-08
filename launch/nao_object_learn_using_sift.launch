@@ -1,5 +1,5 @@
 <launch>
-  <node name="nao_object_learn_using_sift" pkg="object_learn_using_sift" type="object_learn_using_sift">
+  <node name="nao_character_learn" pkg="object_learn_using_sift" type="object_learn_using_sift">
     <remap from="/image_raw" to="/nao_camera/image_raw"/>
   </node>
 </launch>
