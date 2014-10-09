@@ -1,4 +1,5 @@
 #include "ros/ros.h"
+#include <unistd.h>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,7 +14,6 @@
 
 //http://whoopsidaisies.hatenablog.com/entry/2013/12/07/135810#SampleCode
 //http:wiki.ros.org/cv_bridge/Tutorials/UsingCvBridgeToConvertBetweenROSImagesAndOpenCVImages
-
 using namespace std;
 using namespace ros;
 
@@ -37,6 +37,7 @@ class LearningObject
 public:
   ros::NodeHandle nh_;
   ros::Publisher character_pub;
+  ros::Subscriber picture_permission_sub;
   std::vector<template_data> template_imgs;
   image_transport::ImageTransport it_;
   image_transport::Subscriber image_sub_;
@@ -47,14 +48,16 @@ public:
   std::vector<cv::KeyPoint> inputdata_keypoint;
   cv::Mat inputdata_descriptor;
   cv::Mat input_img;
+  int key;
+  int pic_count;
+  int count2;
   void filereading(){
     char fname[256];
     string hiragana;
     
     for(int i=1; i<48; i++){
       sprintf(fname, "/home/kochigami/ros/groovy/object_learn_using_sift/src/image%04d.png",i);
-      //template_imgsが空になっていて困っていたら、この時点で空だった。ファイルのパスを全部通して解決
-      //image_%04d.jpg
+      
       cv::Mat dst_img=cv::imread(fname);
       if(i==1) hiragana="あ"; if(i==2) hiragana="い"; if(i==3) hiragana="う";
       if(i==4) hiragana="え"; if(i==5) hiragana="お"; if(i==6) hiragana="か";
@@ -73,23 +76,29 @@ public:
       if(i==43) hiragana="ろ";if(i==44) hiragana="わ";if(i==45) hiragana="を";
       if(i==46) hiragana="ん";if(i==47) hiragana="おわり";
 
-      //とりあえずカルタでうまくいくか調べる
-      //if(i==**) hiragana="おわり"; //ジョーカーみたいなのを見せる
-
       template_imgs.push_back(template_data(dst_img, detector, extractor, hiragana.c_str()));
     }
-    ROS_INFO("Let's start"); //printfを使っていたらプログラムを動かすまで表示されなかった
+    ROS_INFO("Let's start"); 
   }
   
   LearningObject()
     :it_(nh_),detector (cv::FeatureDetector::create("SIFT")), extractor (cv::DescriptorExtractor::create("SIFT")), matcher (cv::DescriptorMatcher::create("BruteForce"))
   {
-
+    key=0;
+    count2=0;
     filereading();
     image_sub_ = it_.subscribe("/image_raw", 1, 
 			       &LearningObject::FeatureMatching, this);
-    character_pub = nh_.advertise<std_msgs::String>("/nao_character_learn", 10);                        
+    character_pub = nh_.advertise<std_msgs::String>("/nao_character_learn", 10);
+    picture_permission_sub = nh_.subscribe("/nao_taking_picture_permission", 1000, &LearningObject::PictureCb, this);
     cv::initModule_nonfree(); // SIFTの初期化
+  }
+  
+  void PictureCb(const std_msgs::String::ConstPtr& msg){
+    key=1;
+    pic_count=0;
+    usleep(3000000);
+    ROS_INFO("Let's take a picture!");
   }
   
   void FeatureMatching(const sensor_msgs::ImageConstPtr& msg){
@@ -108,7 +117,7 @@ public:
     
     if(!temp_img.empty()){
       cv::imshow("result", temp_img);
-      cv::waitKey(20); //書くのを忘れていた　忘れるとimshowの結果が出てこない
+      cv::waitKey(20);
     }
     else{
       ROS_INFO("temp_img is empty");
@@ -119,11 +128,25 @@ public:
     detector->detect(input_img, inputdata_keypoint);
     // 特徴記述      
     extractor->compute(input_img, inputdata_keypoint, inputdata_descriptor);
-    // マッチング         
+    // マッチング
     int count=0;
+    //int count2=0;
     std_msgs::String hiragana_msg;
-    #pragma omp parallel for
+    
     // for  (std::vector<template_data>::iterator pt= template_imgs.begin(); pt !=template_imgs.end(); pt++){
+    if (key==1){
+      if(pic_count==0){
+	char picture_name[256];
+	sprintf(picture_name, "/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image%04d.png",count2);
+	count2++;
+	cv::imwrite(picture_name,temp_img);
+	pic_count++;
+	ROS_INFO("picture get!!");
+	key=0;
+      }
+      key=0;
+    }
+    #pragma omp parallel for
     for(int i=0; i< template_imgs.size(); i++){
       //std::vector<template_data>::iterator pt = &template_imgs.at(i);
       template_data *pt = &template_imgs.at(i);
@@ -139,7 +162,6 @@ public:
       // }
       
       int count = i;//count++;
-     
       std::vector<cv::DMatch> dmatch;
       matcher->match(pt->descriptor, inputdata_descriptor, dmatch);
       double max_dist=0, min_dist=50;
@@ -166,24 +188,26 @@ public:
        	continue;
       }
       sprintf(window_name, "match_result%d",count);
-      // if(!out.empty()){
+      // if(!out.empty());
       cv::imshow(window_name, out);
+      
 	//cv::waitKey(20); //書くのを忘れていた　忘れるとimshowの結果が出てこない
 	// }
       // else{
       // ROS_INFO("output_img is empty");
       // return;
       //  }
-      
+            
       hiragana_msg.data = pt->name;
       
     }
     //文字を返すstd_msg::Stringタイプのrostopicをpublishする
-    //構造体の中を文字を引数に取るように書き換える
     character_pub.publish(hiragana_msg);
     cv::waitKey(20);
   }
 };
+
+
 
 int main(int argc, char** argv){
   ros::init(argc, argv, "object_learn_using_sift");
