@@ -16,6 +16,8 @@
 //http:wiki.ros.org/cv_bridge/Tutorials/UsingCvBridgeToConvertBetweenROSImagesAndOpenCVImages
 using namespace std;
 using namespace ros;
+using namespace cv;
+
 
 typedef struct TD{
   TD(){
@@ -38,6 +40,8 @@ public:
   ros::NodeHandle nh_;
   ros::Publisher character_pub;
   ros::Subscriber picture_permission_sub;
+  ros::Subscriber friend_name_sub;
+  ros::Subscriber friend_favorite_sub;
   std::vector<template_data> template_imgs;
   image_transport::ImageTransport it_;
   image_transport::Subscriber image_sub_;
@@ -48,6 +52,8 @@ public:
   std::vector<cv::KeyPoint> inputdata_keypoint;
   cv::Mat inputdata_descriptor;
   cv::Mat input_img;
+  string friendname;
+  string friendfavorite;
   int key;
   int pic_count;
   int count2;
@@ -86,11 +92,15 @@ public:
   {
     key=0;
     count2=0;
+    friendname="うおりゃあ";
+    friendfavorite="うありゃあ";
     filereading();
     image_sub_ = it_.subscribe("/image_raw", 1, 
 			       &LearningObject::FeatureMatching, this);
     character_pub = nh_.advertise<std_msgs::String>("/nao_character_learn", 10);
     picture_permission_sub = nh_.subscribe("/nao_taking_picture_permission", 1000, &LearningObject::PictureCb, this);
+    friend_name_sub = nh_.subscribe("/nao_friend_name", 10, &LearningObject::FriendNameCb, this);
+    friend_favorite_sub = nh_.subscribe("/nao_friend_favorite", 10, &LearningObject::FriendFavoriteCb, this);
     cv::initModule_nonfree(); // SIFTの初期化
   }
   
@@ -99,6 +109,14 @@ public:
     pic_count=0;
     usleep(3000000);
     ROS_INFO("Let's take a picture!");
+  }
+
+  void FriendNameCb(const std_msgs::String::ConstPtr& msg){
+    friendname = msg->data.c_str();
+  }
+
+  void FriendFavoriteCb(const std_msgs::String::ConstPtr& msg){
+    friendfavorite = msg->data.c_str();
   }
   
   void FeatureMatching(const sensor_msgs::ImageConstPtr& msg){
@@ -134,15 +152,33 @@ public:
     std_msgs::String hiragana_msg;
     
     // for  (std::vector<template_data>::iterator pt= template_imgs.begin(); pt !=template_imgs.end(); pt++){
+    
     if (key==1){
       if(pic_count==0){
 	char picture_name[256];
+	char my_friend[256];
+	char my_favorite[256];
+
 	sprintf(picture_name, "/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image%04d.png",count2);
 	count2++;
 	cv::imwrite(picture_name,temp_img);
 	pic_count++;
 	ROS_INFO("picture get!!");
 	key=0;
+	
+	if(friendname != "うおりゃあ" && friendfavorite != "うおりゃあ"){
+       
+	  //std::cout<<"友達ができたよ。名前は"<<friendname <<"だよ。"<<std::endl;
+	  //std::cout<<"好きなものは"<<friendfavorite <<"なんだって。よろしくね。"<<std::endl;
+	  cv::Mat write_a_diary = cv::imread(picture_name);
+	  sprintf(my_friend, "友達ができたよ。名前は%sだよ。",friendname.c_str());
+	  sprintf(my_favorite, "好きなものは%sなんだって。よろしくね。", friendfavorite.c_str());
+	  //日本語は?で表示される
+	  cv::putText(write_a_diary, my_friend, cv::Point(50,50),cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(200,200,100), 2, CV_AA);
+	  cv::putText(write_a_diary, my_favorite, cv::Point(300,50),cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(255,200,100), 2, CV_AA);
+	  cv::imshow("Nao's diary", write_a_diary);
+	  cv::waitKey(5000);
+	}
       }
       key=0;
     }
