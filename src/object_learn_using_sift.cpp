@@ -1,6 +1,7 @@
 #include "ros/ros.h"
 #include <unistd.h>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,6 +41,7 @@ class LearningObject
 public:
   ros::NodeHandle nh_;
   ros::Publisher character_pub;
+  ros::Publisher diary_pub;
   ros::Subscriber picture_permission_sub;
   ros::Subscriber friend_name_sub;
   ros::Subscriber friend_favorite_sub;
@@ -91,21 +93,32 @@ public:
   LearningObject()
     :it_(nh_),detector (cv::FeatureDetector::create("SIFT")), extractor (cv::DescriptorExtractor::create("SIFT")), matcher (cv::DescriptorMatcher::create("BruteForce"))
   {
-    // for test
-    // write html
+    // // for test
+    // // write html
     
-    // ファイル出力ストリームの初期化
-    // std::ofstream ofs("/tmp/test.html");
-
-    // ファイルに1行ずつ書き込み
+    // // ファイル出力ストリームの初期化
+    // std::ofstream ofs("/home/kochigami/ros/groovy/object_learn_using_sift/diary/test.html");
+    
+    // // ファイルに1行ずつ書き込み
+    // int count_3 = 1;
     // ofs << "<html>" << std::endl;
-    // ofs << "<body>" << std::endl;
-    // ofs << "test" << std::endl;
-    // ofs << "<img src=\"/tmp/image0044.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
+    // ofs << "<body bgcolor=\"lightpink\">" << std::endl;
+    // ofs << "<h1 align=\"center\">"<<"<font color =\"mediumvioletred\" size=\"7\">"<<"<b>"<< "なお日記 ２０１４年１０月２６日" <<"</b>"<< "</h1>";
+    // ofs << "<hr>" << endl;
+    // ofs << "<h3 align=\"center\">" <<"<font color =\"limegreen\" size=\"6\">"<< "文化祭で友だちができたよ" << "</h3>";
+    // ofs << "<p align=\"center\">" << "<font color =\"navy\" size=\"5\">"<< "今日はマンションの文化祭に行ってきたよ。"<<"<br>"<< "</p>"<< std::endl;
+    // ofs << "<div align=\"center\">"<<std::endl;
+    // ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/src/image" << std::setfill('0') <<std::setw(4) << count_3<<".png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
+    // ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/src/image0044.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
+    // ofs << "</div>" <<std::endl;
+    // ofs << "<p align=\"center\">" << "友だちができたよ。"<<"<br>"<< "</p>"<< std::endl;
+    // ofs << "<p align=\"center\">" <<"<font color =\"navy\">"<< "名前は"<< std::endl;
+    // //ここにswitch文を入れて一文字ずつ書きこむ
+    // ofs << "<font color =\"magenta\">"<< "かなち"<< std::endl;
+    // ofs <<"<font color =\"navy\">"<< "だよ。"<< "</p>"<< std::endl;
     // ofs << "</body>" << std::endl;
     // ofs << "</html>" << std::endl;
-
-
+    
     key=0;
     count2=0;
     friendname="うおりゃあ";
@@ -114,6 +127,7 @@ public:
     image_sub_ = it_.subscribe("/image_raw", 1, 
 			       &LearningObject::FeatureMatching, this);
     character_pub = nh_.advertise<std_msgs::String>("/nao_character_learn", 10);
+    diary_pub = nh_.advertise<std_msgs::String>("/nao_diary_write_finish", 10);
     picture_permission_sub = nh_.subscribe("/nao_taking_picture_permission", 1000, &LearningObject::PictureCb, this);
     friend_name_sub = nh_.subscribe("/nao_friend_name", 10, &LearningObject::FriendNameCb, this);
     friend_favorite_sub = nh_.subscribe("/nao_friend_favorite", 10, &LearningObject::FriendFavoriteCb, this);
@@ -172,113 +186,57 @@ public:
     if (key==1){
       if(pic_count==0){
 	char picture_name[256];
+	char diary_name[256];
+	char diary_topic_name[256];
 	char my_friend[256];
 	char my_favorite[256];
 
 	sprintf(picture_name, "/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image%04d.png",count2);
 	count2++;
-	//100くらいにしておけば問題ない？？
-	if(count2==20){
-	  count2=0;
-	}
 	cv::imwrite(picture_name,temp_img);
 	pic_count++;
 	ROS_INFO("picture get!!");
 	key=0;
 	
 	if(friendname != "うおりゃあ" && friendfavorite != "うおりゃあ"){
-       
+
 	  // for test
 	  // write html
-	  std::cout<<picture_name<<std::endl;
+	  
 	  // ファイル出力ストリームの初期化
-	  std::ofstream ofs("/tmp/test.html");
-	  
+	  sprintf(diary_name, "/home/kochigami/ros/groovy/object_learn_using_sift/diary/diary%04d.html",count2);
+	  //std::ofstream ofs("/home/kochigami/ros/groovy/object_learn_using_sift/diary/test.html");
+	  std::ofstream ofs(diary_name);
 	  // ファイルに1行ずつ書き込み
-	  ofs << "<html>" << std::endl;
-	  ofs << "<body>" << std::endl;
-	  ofs << "test" << std::endl;
-	  switch(count2)
-	    {
-	    case 0:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0000.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 1:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0001.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 2:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0002.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 3:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0003.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 4:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0004.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 5:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0005.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 6:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0006.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 7:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0007.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 8:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0008.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 9:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0009.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 10:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0010.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 11:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0011.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 12:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0012.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 13:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0013.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 14:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0014.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 15:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0015.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 16:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0016.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 17:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0017.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 18:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0018.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    case 19:
-	      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image0019.png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	      break;
-	    
-	    default:
-	      break;
-	    }
 	  
+	  ofs << "<html>" << std::endl;
+	  ofs << "<body bgcolor=\"lightpink\">" << std::endl;
+	  ofs << "<h1 align=\"center\">"<<"<font color =\"mediumvioletred\" size=\"7\">"<<"<b>"<< "なおにっき ２０１４年１０月２６日" <<"</b>"<< "</h1>";
+	  ofs << "<hr>" << endl;
+	  ofs << "<h3 align=\"center\">" <<"<font color =\"limegreen\" size=\"6\">"<< "ぶんかさいでおともだちができたよ" << "</h3>";
+	  ofs << "<p align=\"center\">" << "<font color =\"navy\" size=\"5\">"<< "きょうはマンションのおまつりにいってきたよ。"<<"<br>"<< "</p>"<< std::endl;
+	  ofs << "<div align=\"center\">"<<std::endl;
+	  //ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/src/image" << std::setfill('0') <<std::setw(4) << count_3<<".png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
+	  ofs << "<img src="<<"\"" << picture_name <<"\""<<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
+	  ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/diary/nao2.JPG\"" <<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
+	  ofs << "</div>" <<std::endl;
+	  ofs << "<p align=\"center\">" << "おともだちができたよ。"<<"<br>"<< "</p>"<< std::endl;
+	  ofs << "<p align=\"center\">" <<"<font color =\"navy\">"<< "なまえは"<< std::endl;
+	  ofs << "<font color =\"magenta\">"<< friendname<< std::endl;
+	  ofs <<"<font color =\"navy\">"<< "だよ。"<< "</p>"<< std::endl;
+	  ofs << "<p align=\"center\">" <<"<font color =\"navy\">"<< "すきなものは"<< std::endl;
+	  ofs << "<font color =\"magenta\">"<< friendfavorite<< std::endl;
+	  ofs <<"<font color =\"navy\">"<< "なんだって。"<< "</p>"<< std::endl;
+	  ofs << "<p align=\"center\">" <<"<font color =\"navy\">"<< "きょうはいっしょにあそべてうれしかった。またあえるといいな。"<<"</p>"<< std::endl;
 	  ofs << "</body>" << std::endl;
 	  ofs << "</html>" << std::endl;
-    
-
-	  //std::cout<<"友達ができたよ。名前は"<<friendname <<"だよ。"<<std::endl;
-	  //std::cout<<"好きなものは"<<friendfavorite <<"なんだって。よろしくね。"<<std::endl;
-	  //cv::Mat write_a_diary = cv::imread(picture_name);
-	  //sprintf(my_friend, "友達ができたよ。名前は%sだよ。",friendname.c_str());
-	  //sprintf(my_favorite, "好きなものは%sなんだって。よろしくね。", friendfavorite.c_str());
-	  //日本語は?で表示される
-	  //cv::putText(write_a_diary, my_friend, cv::Point(50,50),cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(200,200,100), 2, CV_AA);
-	  //cv::putText(write_a_diary, my_favorite, cv::Point(300,50),cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(255,200,100), 2, CV_AA);
-	  //cv::imshow("Nao's diary", write_a_diary);
-	  //cv::waitKey(5000);
+	  std_msgs::String diary_msg;
+	  sprintf(diary_topic_name, "diary%04d.html",count2);
+	  std::stringstream ss;
+	  ss << "firefox ../diary/"<<diary_topic_name;
+	  diary_msg.data=ss.str();
+	  diary_pub.publish(diary_msg);
+	  
 	}
       }
       key=0;
