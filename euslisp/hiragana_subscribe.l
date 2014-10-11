@@ -1,0 +1,71 @@
+#!/usr/bin/env roseus
+
+(ros::load-ros-manifest "object_learn_using_sift")
+(ros::roseus "character_subscriber")
+(ros::roseus-add-msgs "std_msgs")
+(setq *name_learn* 0)
+(setq *name_data* nil)
+(setq *favorite_data* nil)
+
+
+(defclass making_newspaper_about_you_class
+  :super propertied-object
+  :slots (*name_data*, *favorite_data*))
+
+(defmethod making_newspaper_about_you_class
+  (:init ()
+	 (ros::subscribe "nao_learn_word" std_msgs::string #'send self :character-cb)
+	 )
+    
+  ;; character-cb -> name-cb -> picture-cb
+
+  (:character-cb (msg)
+		 ;;別に"り"じゃなくて、"登録おわり"的な写真を用意する	 
+		 (if (string= (send msg :data) "そ")
+		     (if (= *name_learn* 1)
+			 (progn
+			   (print '友達ができたよ。名前は)
+			   (print *name_data*)
+			   (print 'っていうんだよ。)
+			   (print '好きなものは)
+			   (print *favorite_data*)
+			   (print 'だよ。よろしくね。)
+			   (setq msg (instance std_msgs::string :init))
+			   (setq msg2 (instance std_msgs::string :init))
+			   (setq msg3 (instance std_msgs::string :init))
+			   
+			   (send msg :data "写真をとる")
+			   (send msg2 :data *name_data*)
+			   (send msg3 :data *favorite_data*)
+			   (ros::publish "/nao_friend_name" msg2)
+			   (ros::publish "/nao_friend_favorite" msg3)
+			   (ros::publish "/nao_taking_picture_permission" msg)
+			   (ros::ros-info "take a photo")
+			   (setq *name_data* nil)
+			   (setq *favorite_data* nil)
+			   (setq *name_learn* 0)
+			   )
+		       (setq *name_learn* (+ *name_learn* 1))
+			 )
+		   (progn
+		     (if (= *name_learn* 0)
+			 (setq *name_data* (concatenate string *name_data* (send msg :data))) 
+		       )  
+		     (if (= *name_learn* 1)
+			 (setq *favorite_data* (concatenate string *favorite_data* (send msg :data)))   
+		       )
+		     )
+		   )
+		 )
+  )
+
+(setq m (instance making_newspaper_about_you_class :init))
+
+(ros::advertise "/nao_taking_picture_permission" std_msgs::string 1)
+(ros::advertise "/nao_friend_name" std_msgs::string 1)
+(ros::advertise "/nao_friend_favorite" std_msgs::string 1)
+
+(ros::ros-info "start subscribing")
+(while (ros::ok)
+  (ros::spin-once)
+  )
