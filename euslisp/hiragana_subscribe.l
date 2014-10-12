@@ -3,6 +3,11 @@
 (ros::load-ros-manifest "object_learn_using_sift")
 (ros::roseus "character_subscriber")
 (ros::roseus-add-msgs "std_msgs")
+
+(require :nao-interface "/home/kochigami/ros/groovy/object_learn_using_sift/euslisp/nao-interface-kochigami.l")
+
+(setq *nao* (nao))
+(setq *ni* (instance nao-interface :init))
 (setq *name_learn* 0)
 (setq *name_data* nil)
 (setq *favorite_data* nil)
@@ -45,8 +50,11 @@
 			   (setq *favorite_data* nil)
 			   (setq *name_learn* 0)
 			   )
-		       (setq *name_learn* (+ *name_learn* 1))
+		       (progn
+			 (setq *name_learn* (+ *name_learn* 1))
+			 (send *ni* :play-soundfile "/home/nao/wav_test/sukinamonoha_naani.wav")
 			 )
+		       )
 		   (progn
 		     (if (= *name_learn* 0)
 			 (setq *name_data* (concatenate string *name_data* (send msg :data))) 

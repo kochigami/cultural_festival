@@ -42,6 +42,7 @@ public:
   ros::NodeHandle nh_;
   ros::Publisher character_pub;
   ros::Publisher diary_pub;
+  ros::Publisher conversation_finished_pub;
   ros::Subscriber picture_permission_sub;
   ros::Subscriber friend_name_sub;
   ros::Subscriber friend_favorite_sub;
@@ -128,6 +129,7 @@ public:
 			       &LearningObject::FeatureMatching, this);
     character_pub = nh_.advertise<std_msgs::String>("/nao_character_learn", 10);
     diary_pub = nh_.advertise<std_msgs::String>("/nao_diary_write_finish", 100);
+    conversation_finished_pub = nh_.advertise<std_msgs::String>("/conversation_finished", 10);
     picture_permission_sub = nh_.subscribe("/nao_taking_picture_permission", 1000, &LearningObject::PictureCb, this);
     friend_name_sub = nh_.subscribe("/nao_friend_name", 10, &LearningObject::FriendNameCb, this);
     friend_favorite_sub = nh_.subscribe("/nao_friend_favorite", 10, &LearningObject::FriendFavoriteCb, this);
@@ -230,13 +232,16 @@ public:
 	  ofs << "<p align=\"center\">" <<"<font color =\"navy\">"<< "きょうはいっしょにあそべてうれしかった。またあえるといいな。"<<"</p>"<< std::endl;
 	  ofs << "</body>" << std::endl;
 	  ofs << "</html>" << std::endl;
-	  std_msgs::String diary_msg;
+	  std_msgs::String diary_msg, conversation_msg;
 	  sprintf(diary_topic_name, "diary%04d.html",count2);
-	  std::stringstream ss;
+	  std::stringstream ss,st;
 	  ss << "firefox ../diary/"<<diary_topic_name;
 	  diary_msg.data=ss.str();
 	  diary_pub.publish(diary_msg);
 	  ROS_INFO("diary published");
+	  st <<"おわり";
+	  conversation_msg.data=st.str();
+	  conversation_finished_pub.publish(conversation_msg);
 	}
       }
       key=0;
