@@ -4,11 +4,17 @@ cultural_festival
 new repository for cultural festival
 using Nao 
 
-This repository contents are not complete, but I want to accomplish the following functions.
+I want to accomplish the following functions.
 
 1.Nao reacts people's movement; for example; watching and touching.
 
 2.Nao learns about people, then she writes a diary about people. 
+
+<how to work>
+roslaunch jsk_2014_04_pr2_73b2 nao_driver.launch camera:=true nao_ip:=***NAO's IP***
+roslaunch cultural_festival cultural_festival.launch
+rosrun cultural_festival play_voice_text_subscriber.py  ***NAO's IP***
+
 
 <programs description>
 
