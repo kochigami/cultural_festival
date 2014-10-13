@@ -8,7 +8,7 @@
   <include file="$(find object_learn_using_sift)/launch/nao_face_detect_demo.launch"/>
   <!--main program about nao's movement-->
 
-  <node name="nao_eus"
+  <node name="main_program"
         pkg="roseus" type="roseus"
         args="$(find object_learn_using_sift)/euslisp/cultural_fest_2014_10_26.l"/>
 

@@ -52,7 +52,10 @@
 		  (progn
 		    (set-behavior :talking)
 		    )
-		(setq *current-behavior* :idle))
+		(progn
+		  (setq *current-behavior* :idle)
+		  (print *current-behavior*)
+		  )
 	      )
 	  )
 	  
@@ -62,7 +65,7 @@
 	(if (eq *current-behavior* :idle)
 	    (progn
 	      ;;(print "idle now")
-	      (if (= (random 25) 0)
+	      (if (= (random 2) 0)
 		  (progn
 		    (looking_and_speaking)
 		    )
@@ -306,7 +309,7 @@
 (ros::ros-info "Let's start")
 ;;(ros::rate 5)
 (while (ros::ok)
-  ;;(nao-servo-on)
+  (nao-servo-on)
   (send *nao* :angle-vector #f(108.808 13.6208 -90.0914 -38.1426 1.22808 109.252 -12.8346 90.1745 39.5537 -1.05711 -3.16169 -0.261268 -52.469 121.039 -67.9785 -0.524941 -3.16169 0.266077 -52.298 121.039 -67.97 -0.964409 0.349159 -2.02391))
   (send *ni* :angle-vector (send *nao* :angle-vector))
 
