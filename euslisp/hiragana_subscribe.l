@@ -42,6 +42,9 @@
 			   (send msg :data "写真をとる")
 			   (send msg2 :data *name_data*)
 			   (send msg3 :data *favorite_data*)
+			   (unix:sleep 1)
+			   (send *ni* :play-soundfile "/home/nao/wav_test/syasinnwo_toruyo_hi_cheese.wav")
+			   (unix:sleep 2)
 			   (ros::publish "/nao_friend_name" msg2)
 			   (ros::publish "/nao_friend_favorite" msg3)
 			   (ros::publish "/nao_taking_picture_permission" msg)
@@ -52,6 +55,8 @@
 			   )
 		       (progn
 			 (setq *name_learn* (+ *name_learn* 1))
+			 ;;ちょっと待つ
+			 (unix:sleep 1)
 			 (send *ni* :play-soundfile "/home/nao/wav_test/sukinamonoha_naani.wav")
 			 )
 		       )

@@ -102,7 +102,7 @@
    ;;左右向く
    (let ((sound_decision (random 4))
 	 (neck_move_decision (random 2)))
-     (if (= (random 25) 0)
+     (if (= (random 10) 0)
 	 (send *nao* :angle-vector (send *ni* :state :potentio-vector))
        (when (= neck_move_decision 0)
 	 (send *nao* :head :neck-y :joint-angle 20)
