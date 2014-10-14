@@ -17,6 +17,8 @@ roslaunch cultural_festival cultural_festival.launch
 
 rosrun cultural_festival play_voice_text_subscriber.py  ***NAO's IP***
 
+roscd object_learn_using_sift/euslisp
+roseus nao-servo-off.l
 
 <programs description>
 

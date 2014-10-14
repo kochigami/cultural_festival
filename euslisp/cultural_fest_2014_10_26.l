@@ -26,6 +26,7 @@
 (setq *character-list* nil)
 (setq *conversation_finished* 0)
 (setq *pre-japanese-char* "っ")
+(setq *launchpad-input* 0)
 
 ;;/tactile系を調べる
 
@@ -220,6 +221,15 @@
                 (string= japanese-char "ていし")
                 )
             (progn
+	      
+	      ;;launchpadからの入力であればリストの最初に代入 added start
+	      (if (= *launchpad-input* 1)
+		  (progn
+		    (setq (elt *character-list* 0)  japanese-char)	  
+		    (setq *launchpad-input* 0)
+		    )
+		)		
+	      ;;;added end 
               (setq *character-list* (append *character-list* (list japanese-char)))
               (if (not (string= *pre-japanese-char* japanese-char))
                   (progn
@@ -432,11 +442,30 @@
       )
     )
   )
+
+(defun launchpad-cb (msg)
+  (let ((japanese-char 0))
+    (if (eq *current-behavior* :talking)
+	;;読み取ったひらがなを返す
+	(progn
+	  (setq japanese-char (send msg :data))
+	  ;;ひらがな発話   
+	  (print japanese-char)
+	  (setq *launchpad-input* 1)
+	  (conversation japanese-char)
+	  )
+      )
+    )
+  )
+
+
 ;;subscribe topics
 (ros::subscribe "/face_detector_mono/faces" face_detector_mono::RectArray #'face-detect-cb)
 ;;(ros::subscribe "/tactile_touch" nao_msgs::TactileTouch #'tactile-detect-cb)
 (ros::subscribe "/nao_character_learn" std_msgs::String  #'character-detect-cb)
 (ros::subscribe "/conversation_finished" std_msgs::String #'conversation-finished-cb)
+(ros::subscribe "/hiragana_send_to_nao" std_msgs::String #'launchpad-cb)
+
 ;;多分使わない
 ;;(ros::subscribe "/" nao_msgs::Bumper #'bumper-touch-cb)
 
