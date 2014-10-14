@@ -1,0 +1,23 @@
+<package>
+  <description brief="cultural_festival">
+
+     cultural_festival
+
+  </description>
+  <author>kochigami</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/object_learn_using_sift</url>
+  <depend package="sensor_msgs"/>
+  <depend package="cv_bridge"/>
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+  <depend package="std_msgs"/>
+  <depend package="image_transport"/>
+  <depend package="opencv2"/>
+  <depend package="face_detector_mono"/>
+  <depend package="naoeus"/>
+
+</package>
+
+
