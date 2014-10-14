@@ -64,9 +64,11 @@ public:
   void filereading(){
     char fname[256];
     string hiragana;
-    
-    for(int i=1; i<48; i++){
-      sprintf(fname, "/home/kochigami/ros/groovy/object_learn_using_sift/src/image%04d.png",i);
+    ROS_INFO("before read");
+    for(int i=1; i<48; i++){   
+      //sprintf(fname, "/home/kochigami/ros/groovy/cultural_festival/src/image%04d.png",i);
+      sprintf(fname, "/home/kochigami/Desktop/karuta/img%04d.png",i);
+      //ROS_INFO("template file name: %s", fname);
       
       cv::Mat dst_img=cv::imread(fname);
       if(i==1) hiragana="あ"; if(i==2) hiragana="い"; if(i==3) hiragana="う";
@@ -193,7 +195,7 @@ public:
 	char my_friend[256];
 	char my_favorite[256];
 
-	sprintf(picture_name, "/home/kochigami/ros/groovy/object_learn_using_sift/picture/test_image%04d.png",count2);
+	sprintf(picture_name, "/home/kochigami/ros/groovy/cultural_festival/picture/test_image%04d.png",count2);
 	count2++;
 	cv::imwrite(picture_name,temp_img);
 	pic_count++;
@@ -206,7 +208,7 @@ public:
 	  // write html
 	  
 	  // ファイル出力ストリームの初期化
-	  sprintf(diary_name, "/home/kochigami/ros/groovy/object_learn_using_sift/diary/diary%04d.html",count2);
+	  sprintf(diary_name, "/home/kochigami/ros/groovy/cultural_festival/diary/diary%04d.html",count2);
 	  //std::ofstream ofs("/home/kochigami/ros/groovy/object_learn_using_sift/diary/test.html");
 	  std::ofstream ofs(diary_name);
 	  // ファイルに1行ずつ書き込み
@@ -222,7 +224,7 @@ public:
 	    ofs << "<div align=\"center\">"<<std::endl;
 	    //ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/src/image" << std::setfill('0') <<std::setw(4) << count_3<<".png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
 	    ofs << "<img src="<<"\"" << picture_name <<"\""<<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
-	    ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/diary/nao2.JPG\"" <<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
+	    ofs << "<img src=\"/home/kochigami/ros/groovy/cultural_festival/diary/nao2.JPG\"" <<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
 	    ofs << "</div>" <<std::endl;
 	    ofs << "<p align=\"center\">" << "おともだちができたよ。"<<"<br>"<< "</p>"<< std::endl;
 	    ofs << "<p align=\"center\">" <<"<font color =\"navy\">"<< "なまえは"<< std::endl;
@@ -245,7 +247,7 @@ public:
 	    ofs << "<div align=\"center\">"<<std::endl;
 	    //ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/src/image" << std::setfill('0') <<std::setw(4) << count_3<<".png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
 	    ofs << "<img src="<<"\"" << picture_name <<"\""<<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
-	    ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/diary/nao2.JPG\"" <<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
+	    ofs << "<img src=\"/home/kochigami/ros/groovy/cultural_festival/diary/nao2.JPG\"" <<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
 	    ofs << "</div>" <<std::endl;
 	    ofs << "<p align=\"center\">" << "おともだちができたよ。"<<"<br>"<< "</p>"<< std::endl;
 	    ofs << "<p align=\"center\">" <<"<font color =\"mediumvioletred\">"<< "なまえは"<< std::endl;
@@ -262,7 +264,7 @@ public:
 	  std_msgs::String diary_msg, conversation_msg;
 	  sprintf(diary_topic_name, "diary%04d.html",count2);
 	  std::stringstream ss,st;
-	  ss << "firefox /home/kochigami/ros/groovy/object_learn_using_sift/diary/"<<diary_topic_name;
+	  ss << "firefox /home/kochigami/ros/groovy/cultural_festival/diary/"<<diary_topic_name;
 	  diary_msg.data=ss.str();
 	  diary_pub.publish(diary_msg);
 	  ROS_INFO("diary published");
@@ -337,7 +339,7 @@ public:
 
 
 int main(int argc, char** argv){
-  ros::init(argc, argv, "object_learn_using_sift");
+  ros::init(argc, argv, "cultural_festival");
   LearningObject LO;
   ros::spin();
   return 0;

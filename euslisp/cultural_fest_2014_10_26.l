@@ -1,13 +1,13 @@
 #!/usr/bin/env roseus
 ;; jsk-ros-pkg/jsk_demos/interactive_behavior_201409のコードを見ながら書いています。
 ;;まだ途中...
-(ros::load-ros-manifest "object_learn_using_sift")
+(ros::load-ros-manifest "cultural_festival")
 
 (ros::roseus-add-msgs "face_detector_mono")
 (ros::roseus-add-msgs "nao_msgs") ;;tactile
 (ros::roseus-add-msgs "std_msgs")
 
-(require :nao-interface "/home/kochigami/ros/groovy/object_learn_using_sift/euslisp/nao-interface-kochigami.l")
+(require :nao-interface "/home/kochigami/ros/groovy/cultural_festival/euslisp/nao-interface-kochigami.l")
 (ros::roseus "interaction_behavior_by_nao")
 
 (ros::advertise "nao_learn_word" std_msgs::string 1)
@@ -464,7 +464,7 @@
 ;;(ros::subscribe "/tactile_touch" nao_msgs::TactileTouch #'tactile-detect-cb)
 (ros::subscribe "/nao_character_learn" std_msgs::String  #'character-detect-cb)
 (ros::subscribe "/conversation_finished" std_msgs::String #'conversation-finished-cb)
-(ros::subscribe "/hiragana_send_to_nao" std_msgs::String #'launchpad-cb)
+;;(ros::subscribe "/hiragana_send_to_nao" std_msgs::String #'launchpad-cb)
 
 ;;多分使わない
 ;;(ros::subscribe "/" nao_msgs::Bumper #'bumper-touch-cb)

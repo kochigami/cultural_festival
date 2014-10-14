@@ -2,34 +2,34 @@
   <!--env name = "PYTHONPATH" value="$(env PYTHONPATH)"/-->
   <arg name="nao_ip" default="$(optenv NAO_IP 127.0.0.1)"/>
   <!--japanese character recognition by using sift-->
-  <include file="$(find object_learn_using_sift)/launch/nao_object_learn_using_sift.launch"/>
+  <include file="$(find cultural_festival)/launch/nao_object_learn_using_sift.launch"/>
 
   <!--face recognition-->
-  <include file="$(find object_learn_using_sift)/launch/nao_face_detect_demo.launch"/>
+  <include file="$(find cultural_festival)/launch/nao_face_detect_demo.launch"/>
   <!--main program about nao's movement-->
 
   <node name="main_program"
         pkg="roseus" type="roseus"
-        args="$(find object_learn_using_sift)/euslisp/cultural_fest_2014_10_26.l"/>
+        args="$(find cultural_festival)/euslisp/cultural_fest_2014_10_26.l"/>
 
    <!--launchpad-->
-  <include file="$(find object_learn_using_sift)/launch/launchpad_hiragana_sender.launch"/>
+  <!--include file="$(find cultural_festival)/launch/launchpad_hiragana_sender.launch"/-->
 
   <!--subscribe japanese character topic and collect one character to one word-->
   <node name="hiragana_subscribe"
         pkg="roseus" type="roseus"
-        args="$(find object_learn_using_sift)/euslisp/hiragana_subscribe.l"/>
+        args="$(find cultural_festival)/euslisp/hiragana_subscribe.l"/>
   <!--launchpad-->
-  <node name="hiragana_send_by_launchpad"
+  <!--node name="hiragana_send_by_launchpad"
         pkg="roseus" type="roseus"
-        args="$(find object_learn_using_sift)/euslisp/launchpad-hiragana-sender.l"/>
+        args="$(find cultural_festival)/euslisp/launchpad-hiragana-sender.l"/-->
 
   <!--for diary as a html file display-->
   <node name="nao_japanese_character_recognition"
-        pkg="object_learn_using_sift" type="diary_publish.py"/>
+        pkg="cultural_festival" type="diary_publish.py"/>
   <!--for nao speaking-->
   <!--node name="nao_speaking"
-        pkg="object_learn_using_sift" type="play_voice_text_subscriber.py" args="$(arg nao_ip)" /-->
+        pkg="cultural_festival" type="play_voice_text_subscriber.py" args="$(arg nao_ip)" /-->
 
 
 </launch>

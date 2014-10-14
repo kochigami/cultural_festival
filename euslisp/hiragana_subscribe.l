@@ -1,10 +1,10 @@
 #!/usr/bin/env roseus
 
-(ros::load-ros-manifest "object_learn_using_sift")
+(ros::load-ros-manifest "cultural_festival")
 (ros::roseus "character_subscriber")
 (ros::roseus-add-msgs "std_msgs")
 
-(require :nao-interface "/home/kochigami/ros/groovy/object_learn_using_sift/euslisp/nao-interface-kochigami.l")
+(require :nao-interface "/home/kochigami/ros/groovy/cultural_festival/euslisp/nao-interface-kochigami.l")
 
 (setq *nao* (nao))
 (setq *ni* (instance nao-interface :init))
