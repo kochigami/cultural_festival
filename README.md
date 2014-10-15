@@ -13,11 +13,10 @@ I want to accomplish the following functions.
 <how to work>
 roslaunch jsk_2014_04_pr2_73b2 nao_driver.launch camera:=true nao_ip:=***NAO's IP***
 
-roslaunch cultural_festival cultural_festival.launch
-
-rosrun cultural_festival play_voice_text_subscriber.py  ***NAO's IP***
+roslaunch cultural_festival cultural_festival.launch nao_ip:=***NAO's IP***
 
 roscd object_learn_using_sift/euslisp
+
 roseus nao-servo-off.l
 
 <programs description>

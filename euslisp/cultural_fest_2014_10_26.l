@@ -218,14 +218,14 @@
                 (string= japanese-char "る") (string= japanese-char "れ")
                 (string= japanese-char "ろ") (string= japanese-char "わ")
                 (string= japanese-char "を") (string= japanese-char "ん")
-                (string= japanese-char "ていし")
+                (string= japanese-char "ていし") (string= japanese-char "おしまい")
                 )
             (progn
 	      
 	      ;;launchpadからの入力であればリストの最初に代入 added start
 	      (if (= *launchpad-input* 1)
 		  (progn
-		    (setq (elt *character-list* 0)  japanese-char)	  
+		    (setf (elt *character-list* 0)  japanese-char)	  
 		    (setq *launchpad-input* 0)
 		    )
 		)		
@@ -367,6 +367,20 @@
                 )
               (setq *count_num* 0)
               )
+	  ;; (progn
+	  ;;   (if (string= "おしまい" japanese-char)
+	  ;; 	(progn
+	  ;; 	  (setq publish-msg (instance std_msgs::string :init))
+	  ;; 	  ;;とりあえず、最初に認識した答えを登録する                   
+	  ;; 	  ;;変える必要があるかも                                       
+	  ;; 	  (send publish-msg :data "おしまい")
+	  ;; 	  (ros::publish "nao_learn_word" publish-msg)
+	  ;; 	  (setq *character-list* nil)
+	  ;; 	  (send *ni* :play-soundfile "/home/nao/wav_test/ok.wav")
+	  ;; 	  (setq *call_num* 0)
+	  ;; 	  )
+	  ;;     )
+	  ;;   )
           )
         )
       )
@@ -464,7 +478,7 @@
 ;;(ros::subscribe "/tactile_touch" nao_msgs::TactileTouch #'tactile-detect-cb)
 (ros::subscribe "/nao_character_learn" std_msgs::String  #'character-detect-cb)
 (ros::subscribe "/conversation_finished" std_msgs::String #'conversation-finished-cb)
-;;(ros::subscribe "/hiragana_send_to_nao" std_msgs::String #'launchpad-cb)
+(ros::subscribe "/hiragana_send_to_nao" std_msgs::String #'launchpad-cb)
 
 ;;多分使わない
 ;;(ros::subscribe "/" nao_msgs::Bumper #'bumper-touch-cb)

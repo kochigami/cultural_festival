@@ -1,5 +1,5 @@
 <launch>
-  <!--env name = "PYTHONPATH" value="$(env PYTHONPATH)"/-->
+  <env name = "PYTHONPATH" value="$(env PYTHONPATH)"/>
   <arg name="nao_ip" default="$(optenv NAO_IP 127.0.0.1)"/>
   <!--japanese character recognition by using sift-->
   <include file="$(find cultural_festival)/launch/nao_object_learn_using_sift.launch"/>
@@ -13,7 +13,7 @@
         args="$(find cultural_festival)/euslisp/cultural_fest_2014_10_26.l"/>
 
    <!--launchpad-->
-  <!--include file="$(find cultural_festival)/launch/launchpad_hiragana_sender.launch"/-->
+  <include file="$(find cultural_festival)/launch/launchpad_hiragana_sender.launch"/>
 
   <!--subscribe japanese character topic and collect one character to one word-->
   <node name="hiragana_subscribe"
@@ -28,8 +28,8 @@
   <node name="nao_japanese_character_recognition"
         pkg="cultural_festival" type="diary_publish.py"/>
   <!--for nao speaking-->
-  <!--node name="nao_speaking"
-        pkg="cultural_festival" type="play_voice_text_subscriber.py" args="$(arg nao_ip)" /-->
+  <node name="nao_speaking"
+        pkg="cultural_festival" type="play_voice_text_subscriber.py" args="$(arg nao_ip)" />
 
 
 </launch>

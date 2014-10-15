@@ -65,7 +65,7 @@ public:
     char fname[256];
     string hiragana;
     ROS_INFO("before read");
-    for(int i=1; i<48; i++){   
+    for(int i=1; i<49; i++){   
       //sprintf(fname, "/home/kochigami/ros/groovy/cultural_festival/src/image%04d.png",i);
       sprintf(fname, "/home/kochigami/Desktop/karuta/img%04d.png",i);
       //ROS_INFO("template file name: %s", fname);
@@ -86,7 +86,7 @@ public:
       if(i==37) hiragana="ゆ";if(i==38) hiragana="よ";if(i==39) hiragana="ら";
       if(i==40) hiragana="り";if(i==41) hiragana="る";if(i==42) hiragana="れ";
       if(i==43) hiragana="ろ";if(i==44) hiragana="わ";if(i==45) hiragana="を";
-      if(i==46) hiragana="ん";if(i==47) hiragana="おわり";
+      if(i==46) hiragana="ん";if(i==47) hiragana="おわり";if(i==48) hiragana="おしまい"; 
 
       template_imgs.push_back(template_data(dst_img, detector, extractor, hiragana.c_str()));
     }

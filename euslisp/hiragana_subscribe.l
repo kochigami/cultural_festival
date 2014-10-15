@@ -26,7 +26,7 @@
 
   (:character-cb (msg)
 		 ;;別に"り"じゃなくて、"登録おわり"的な写真を用意する	 
-		 (if (string= (send msg :data) "そ")
+		 (if (string= (send msg :data) "おしまい")
 		     (if (= *name_learn* 1)
 			 (progn
 			   (print '友達ができたよ。名前は)
@@ -72,10 +72,12 @@
 		       )
 		   (progn
 		     (if (= *name_learn* 0)
-			 (setq *name_data* (concatenate string *name_data* (send msg :data))) 
-		       )  
+			 ;;added
+			 (setq *name_data* (concatenate string *name_data* (send msg :data)))  
+		       )
 		     (if (= *name_learn* 1)
-			 (setq *favorite_data* (concatenate string *favorite_data* (send msg :data)))   
+			 ;;added
+			 (setq *favorite_data* (concatenate string *favorite_data* (send msg :data)))
 		       )
 		     )
 		   )
