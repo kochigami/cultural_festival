@@ -49,6 +49,7 @@
 			     )
 			   (unix:sleep 1)
 			   (send *ni* :play-soundfile "/home/nao/wav_test/syasinnwo_toruyo_hi_cheese.wav")
+			   (send *ni* :play-soundfile "/home/nao/wav_test/kasya.wav")
 			   (unix:sleep 2)
 			   (ros::publish "/nao_friend_name" msg2)
 			   (ros::publish "/nao_friend_favorite" msg3)
