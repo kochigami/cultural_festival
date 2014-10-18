@@ -11,22 +11,39 @@
 (ros::roseus "interaction_behavior_by_nao")
 
 (ros::advertise "nao_learn_word" std_msgs::string 1)
-(ros::advertise "nao_regist_stop" std_msgs::string 1)
+(ros::advertise "nao_diary_angry" std_msgs::string 1)
+;;(ros::advertise "nao_regist_stop" std_msgs::string 1)
 
 ;;initialization
+;;for nao initialization
 (ros::ros-info "nao initializing")
 (setq *nao* (nao))
 (setq *ni* (instance nao-interface :init))
 (objects (list *nao*))
+;; for idle-check
 (setq *current-behavior* :idle)
 (setq *behavior-start-time* (ros::time-now))
-(setq *tfl* (instance ros::transform-listener :init))
 (setq *idle-check-timeout* 0)
-(setq *register-check* 10)
-(setq *character-list* nil)
 (setq *conversation_finished* 0)
+(setq *nao_asking_accomplished* 0)
+(setq *bumper_touched* 0)
+(setq *head_touch_count_pre* 0)
+(setq *nao_touch_pattern* 12)
+(setq *speak_num1* 0)
+(setq *speak_num2* 0)
+(setq *speak_num3* 0)
+(setq *speak_num4* 0)
+(setq *speak_num5* 0)
+(setq *speak_num6* 0)
+;; for conversation
+(setq *character-list* nil)
+(setq *call_num* 0)
+(setq *pub_num* 0)
 (setq *pre-japanese-char* "っ")
+;;(setq *register-check* 10)
 (setq *launchpad-input* 0)
+;; for tactile-detect-cb
+(setq *head_touch_count* 0) 
 
 ;;/tactile系を調べる
 
@@ -43,25 +60,152 @@
   )
 ;;behaviorをidleに戻す関数
 (defun idle-check()
-  (let ((now (ros::time-now)))
-    ;;(print *current-behavior*)
+  (let ((now (ros::time-now))
+	(nao-angry-msg nil))
     ;;idleじゃないとき ある時間(*idle-check-timeout*)を過ぎたらidleになる
+    ;;added 
+    (if (= *bumper_touched* 1)
+	(progn
+	  ;;(send *ni* :play-soundfile "/home/nao/wav_test/ok.wav")
+	  (setq *nao_touch_pattern* 12)
+	  (setq *speak_num1* 0)
+	  (setq *speak_num2* 0)
+	  (setq *speak_num3* 0)
+	  (setq *speak_num4* 0)
+	  (setq *speak_num5* 0)
+	  (setq *speak_num6* 0)
+	  (setq *head_touch_count* 0)
+	  (setq *head_touch_count_pre* 0)
+	  (set-behavior :asking)
+	  (setq *bumper_touched* 0)
+	  )
+      )
+    ;;added end
     (if (eq *current-behavior* :eyecontact)
 	(if (> (send (ros::time- now *behavior-start-time*) :to-sec) *idle-check-timeout*)
 	    (progn
 	      (if (= (random 2) 0) 
 		  (progn
-		    (set-behavior :talking)
+		    ;;added 
+		    ;;(set-behavior :talking)
+		    (set-behavior :asking)
+		    ;;(send *ni* :play-soundfile "/home/nao/wav_test/ok.wav")
+		    ;;added end
 		    )
 		(progn
 		  (setq *current-behavior* :idle)
 		  )
+		)
 	      )
-	  )
 	  
       ;;idleのとき ある確率で:look-and-speakモードに移行する(キョロキョロしてお話)
-      )
+	  )
       (progn
+	;;added
+	(if (eq *current-behavior* :asking)
+	    (progn
+	      ;;ナオのことを助けてあげたら:talkingに移行
+	      ;;頭がかゆい　なでなでして
+	      (if (= *speak_num1* 0)
+		  (progn
+		    (send *ni* :play-soundfile "/home/nao/wav_test/neenee_nadenadesite.wav")
+		    (setq *speak_num1* (+ *speak_num1* 1))
+		    )
+		)
+	      (when (> (send (ros::time- now *behavior-start-time*) :to-sec) 10)
+		(if (= *nao_touch_pattern* 12)
+		    (if (> *head_touch_count* 5)
+			(progn 
+			  ;;もういいよ　ありがとう
+			  (if (= *speak_num2* 0)
+			      (progn
+				(send *ni* :play-soundfile "/home/nao/wav_test/mouiiyo_arigatou.wav")
+				(setq *speak_num2* (+ *speak_num2* 1))
+				)
+			    )
+			  (setq *head_touch_count_pre* *head_touch_count*)
+			  (setq *nao_touch_pattern* 0) 
+			  )
+		      (progn
+			;;もっとなでなでして　まだかゆい
+			(if (= *speak_num3* 0)
+			    (if (= *head_touch_count* 0)
+				(progn
+				  ;;なでてよー
+				  (send *ni* :play-soundfile "/home/nao/wav_test/mou_nadeteyo.wav")
+				  (setq *speak_num3* (+ *speak_num3* 1))
+				  (setq *head_touch_count_pre* *head_touch_count*)
+				  (setq *nao_touch_pattern* 3)
+				  )
+			      (progn
+				(send *ni* :play-soundfile "/home/nao/wav_test/motto_nadenadesite.wav")
+				(setq *speak_num3* (+ *speak_num3* 1))
+				(setq *head_touch_count_pre* *head_touch_count*)
+				(setq *nao_touch_pattern* 1)
+				)
+			      )
+			  )
+			)
+		      )
+		  )
+		)
+	      (when (> (send (ros::time- now *behavior-start-time*) :to-sec) 15)
+		(if (or (and (> (- *head_touch_count* *head_touch_count_pre*) 0) (= *nao_touch_pattern* 1))
+			(and (< (- *head_touch_count* *head_touch_count_pre*) 5) (= *nao_touch_pattern* 0))
+			(and (> (- *head_touch_count*  *head_touch_count_pre*) 0) (= *nao_touch_pattern* 3)))
+		    (progn
+		      ;;ありがとう
+		      (if (= *speak_num4* 0)
+			  (progn
+			    (send *ni* :play-soundfile "/home/nao/wav_test/arigatou_tasukatta.wav")
+			    (setq *speak_num4* (+ *speak_num4* 1))
+			    )
+			)
+		      (set-behavior :talking)
+		      )
+		  (progn
+		    (if (and (= (- *head_touch_count* *head_touch_count_pre*) 0) (or (= *nao_touch_pattern* 1) (= *nao_touch_pattern* 3)))
+			(progn
+			  ;;もういいってば！
+			  (if (= *speak_num5* 0)
+			      (progn
+				(send *ni* :play-soundfile "/home/nao/wav_test/mouiitteba.wav")
+				(send *ni* :play-soundfile "/home/nao/wav_test/nao_ijikeccyatta.wav")
+				(setq *speak_num5* (+ *speak_num5* 1))
+				)
+			    )	      
+			  (setq nao-angry-msg (instance std_msgs::string :init))                                     
+			  (send nao-angry-msg :data "なでてくれなかった")
+			  (ros::publish "nao_diary_angry" nao-angry-msg)
+			  (set-behavior :idle)
+			  )
+		      )
+		    (if (and (> (- *head_touch_count*  *head_touch_count_pre*) 5) (= *nao_touch_pattern* 0))
+			(progn
+			  (if (= *speak_num6* 0)
+			      (progn
+				(send *ni* :play-soundfile "/home/nao/wav_test/mouiitteba.wav")
+				(send *ni* :play-soundfile "/home/nao/wav_test/nao_ijikeccyatta.wav")
+				(setq *speak_num6* (+ *speak_num6* 1))
+				)
+			    )	      
+			  (setq nao-angry-msg (instance std_msgs::string :init))                                     
+			  (send nao-angry-msg :data "なおおこ")
+			  (ros::publish "nao_diary_angry" nao-angry-msg)
+			  (set-behavior :idle)
+			  )
+		      )
+		    )		
+		  )
+		)
+	      )
+	  )
+	
+	
+	  
+	  
+      
+	;;added end
 	(if (eq *current-behavior* :idle)
 	    (progn
 	      ;;(print "idle now")
@@ -92,31 +236,34 @@
 
 ;;behaviorをセットする関数
 (defun set-behavior (behavior &rest args)
-  (setq *current-behavior* behavior)
-  (setq *behavior-start-time* (ros::time-now))
-  (print *current-behavior*)
-  (if (eq *current-behavior* :talking)
-      (progn
-	;;ファイルの話す速さに差があるので直す
-	(send *ni* :play-soundfile "/home/nao/wav_test/konnichiwa.wav")
-	(send *ni* :play-soundfile "/home/nao/wav_test/naokaraonegai.wav")
-	(unix:sleep 1)
-	(send *ni* :play-soundfile "/home/nao/wav_test/onegai.wav")
-	(unix:sleep 1)
-	(send *ni* :play-soundfile "/home/nao/wav_test/onegai2.wav")
-	(unix:sleep 2)
-	(send *ni* :play-soundfile "/home/nao/wav_test/jyaaikuyo.wav")
-	(setq rand_num (random 3))
-	(if (= rand_num 0)
-	    (send *ni* :play-soundfile "/home/nao/wav_test/onamaeha.wav")
+  (let ((rand_num 0))
+    (setq *current-behavior* behavior)
+    (setq *behavior-start-time* (ros::time-now))
+    (print *current-behavior*)
+    
+    (if (eq *current-behavior* :talking)
+	(progn
+	  ;;ナオにカードを持たせて、身振りで説明してもらおう
+	  (send *ni* :play-soundfile "/home/nao/wav_test/konnichiwa.wav")
+	  (send *ni* :play-soundfile "/home/nao/wav_test/naokaraonegai.wav")
+	  (unix:sleep 1)
+	  (send *ni* :play-soundfile "/home/nao/wav_test/onegai.wav")
+	  (unix:sleep 1)
+	  (send *ni* :play-soundfile "/home/nao/wav_test/onegai2.wav")
+	  (unix:sleep 2)
+	  (send *ni* :play-soundfile "/home/nao/wav_test/jyaaikuyo.wav")
+	  (setq rand_num (random 3))
+	  (if (= rand_num 0)
+	      (send *ni* :play-soundfile "/home/nao/wav_test/onamaeha.wav")
+	    )
+	  (if (= rand_num 1)
+	      (send *ni* :play-soundfile "/home/nao/wav_test/namaehananteiuno.wav")
+	    )
+	  (if (= rand_num  2)
+	      (send *ni* :play-soundfile "/home/nao/wav_test/nanteiunamae.wav")
+	    )
 	  )
-	(if (= rand_num 1)
-	    (send *ni* :play-soundfile "/home/nao/wav_test/namaehananteiuno.wav")
-	  )
-	(if (= rand_num  2)
-	    (send *ni* :play-soundfile "/home/nao/wav_test/nanteiunamae.wav")
-	  )
-	)
+      )
     )
   )
 
@@ -171,15 +318,14 @@
   )
 
 (defun conversation (japanese-char)
-  (let ((publish-msg nil)
-        (word-string nil))
+  (let ((publish-msg nil))
     ;;ひらがなを一回だけ受け取る                                              
     ;;ひらがなをリストに追加する                                              
     (if (string= japanese-char "おわり")
 	(progn
-	  (setq *count_num* (+ *count_num* 1))
-	  ;;"おわり"を受け取ったらrostopic pubする →  後で日記にする       
-	  (if (= *count_num* 1)
+	  (setq *pub_num* (+ *pub_num* 1))
+	  ;;"おわり"を1つ受け取ったら1度だけrostopic pubする  
+	  (if (= *pub_num* 1)
 	      (progn
 		(setq publish-msg (instance std_msgs::string :init))
 		;;とりあえず、最初に認識した答えを登録する                   
@@ -220,22 +366,30 @@
                 (string= japanese-char "を") (string= japanese-char "ん")
                 (string= japanese-char "ていし") (string= japanese-char "おしまい")
                 )
-            (progn
-	      
-	      ;;launchpadからの入力であればリストの最初に代入 added start
+            (progn	      
+	      ;;launchpadからの入力であればリストの最初に代入 (入力の修正用として作用)
 	      (if (= *launchpad-input* 1)
 		  (progn
 		    (setf (elt *character-list* 0)  japanese-char)	  
 		    (setq *launchpad-input* 0)
 		    )
-		)		
-	      ;;;added end 
+		)
+	      ;;文字を一つずつ代入
               (setq *character-list* (append *character-list* (list japanese-char)))
+	      ;;文字が前のと異なったら１回だけしゃべる
               (if (not (string= *pre-japanese-char* japanese-char))
                   (progn
                     (setq *call_num* 0)
                     )
                 )
+	      
+	      ;;added if name is nao, nao publishes topic
+	      (if (and (string= *pre-japanese-char* "な") (string= japanese-char "お"))
+		  (progn
+		    
+		    )
+		  )
+	      ;;added
               (if (= *call_num* 0)
                   (progn
 		    ;;ファイルを全部Naoに入れてここにも記入
@@ -367,22 +521,8 @@
                     (setq *pre-japanese-char* japanese-char)
                     )
                 )
-              (setq *count_num* 0)
+              (setq *pub_num* 0)
               )
-	  ;; (progn
-	  ;;   (if (string= "おしまい" japanese-char)
-	  ;; 	(progn
-	  ;; 	  (setq publish-msg (instance std_msgs::string :init))
-	  ;; 	  ;;とりあえず、最初に認識した答えを登録する                   
-	  ;; 	  ;;変える必要があるかも                                       
-	  ;; 	  (send publish-msg :data "おしまい")
-	  ;; 	  (ros::publish "nao_learn_word" publish-msg)
-	  ;; 	  (setq *character-list* nil)
-	  ;; 	  (send *ni* :play-soundfile "/home/nao/wav_test/ok.wav")
-	  ;; 	  (setq *call_num* 0)
-	  ;; 	  )
-	  ;;     )
-	  ;;   )
           )
         )
       )
@@ -433,16 +573,13 @@
   (setq *conversation_finished* 1)
   )
 
-;; (defun tactile-detect-cb (msg)
-;;   (let ((head-set-value 10))
-;;     (if (or (eq *current-behavior* :idle)
-;; 	    (eq *current-behavior* :look-and-speak)
-;; 	    (eq *current-behavior* :eyecontact)
-;; 	    (eq *current-behavior* :talking))
-;; 	(head_touch)
-;;       )
-;;     )
-;;   )
+(defun tactile-detect-cb (msg)
+  (let ((head-set-value 10))
+    (if (eq *current-behavior* :asking)
+ 	(setq *head_touch_count* (+ *head_touch_count* 1))
+      )
+    )
+  )
 
 (defun character-detect-cb (msg)
   (let ((japanese-char 0))
@@ -450,10 +587,7 @@
 	;;読み取ったひらがなを返す
 	(progn
 	  (setq japanese-char (send msg :data))
-	  ;;ひらがな発話   
-	  (print japanese-char)
 	  (conversation japanese-char)
-	    
 	  )
       )
     )
@@ -464,9 +598,7 @@
     (if (eq *current-behavior* :talking)
 	;;読み取ったひらがなを返す
 	(progn
-	  (setq japanese-char (send msg :data))
-	  ;;ひらがな発話   
-	  (print japanese-char)
+	  (setq japanese-char (send msg :data))   
 	  (setq *launchpad-input* 1)
 	  (conversation japanese-char)
 	  )
@@ -474,16 +606,24 @@
     )
   )
 
+;;added 
+(defun bumper-touch-cb (msg)
+  (if (or (eq *current-behavior* :idle)
+	  (eq *current-behavior* :eyecontact))
+      (if (= (send msg :state) 1)
+	  (setq *bumper_touched* 1)
+	)
+    )
+  )
+;;added end
 
 ;;subscribe topics
 (ros::subscribe "/face_detector_mono/faces" face_detector_mono::RectArray #'face-detect-cb)
-;;(ros::subscribe "/tactile_touch" nao_msgs::TactileTouch #'tactile-detect-cb)
+(ros::subscribe "/tactile_touch" nao_msgs::TactileTouch #'tactile-detect-cb)
 (ros::subscribe "/nao_character_learn" std_msgs::String  #'character-detect-cb)
 (ros::subscribe "/conversation_finished" std_msgs::String #'conversation-finished-cb)
 (ros::subscribe "/hiragana_send_to_nao" std_msgs::String #'launchpad-cb)
-
-;;多分使わない
-;;(ros::subscribe "/" nao_msgs::Bumper #'bumper-touch-cb)
+(ros::subscribe "/bumper" nao_msgs::Bumper #'bumper-touch-cb)
 
 ;;main loopを回す
 (ros::ros-info "Let's start")
@@ -492,7 +632,6 @@
   ;;(nao-servo-on)
   (send *nao* :angle-vector #f(108.808 13.6208 -90.0914 -38.1426 1.22808 109.252 -12.8346 90.1745 39.5537 -1.05711 -3.16169 -0.261268 -52.469 121.039 -67.9785 -0.524941 -3.16169 0.266077 -52.298 121.039 -67.97 -0.964409 0.349159 -2.02391))
   (send *ni* :angle-vector (send *nao* :angle-vector))
-
   (idle-check)
   (ros::spin-once)
   (ros::sleep)

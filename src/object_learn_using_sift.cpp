@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <iomanip>
+#include <string.h>
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,6 +47,9 @@ public:
   ros::Subscriber picture_permission_sub;
   ros::Subscriber friend_name_sub;
   ros::Subscriber friend_favorite_sub;
+  //added 
+  ros::Subscriber nao_diary_angry_mode_sub;
+  //added end
   std::vector<template_data> template_imgs;
   image_transport::ImageTransport it_;
   image_transport::Subscriber image_sub_;
@@ -61,6 +65,7 @@ public:
   int key;
   int pic_count;
   int count2;
+  int nao_diary_angry_mode;
   void filereading(){
     char fname[256];
     string hiragana;
@@ -126,6 +131,9 @@ public:
     count2=0;
     friendname="うおりゃあ";
     friendfavorite="うありゃあ";
+    //added 
+    nao_diary_angry_mode=0;
+    //added end
     filereading();
     image_sub_ = it_.subscribe("/image_raw", 1, 
 			       &LearningObject::FeatureMatching, this);
@@ -135,6 +143,9 @@ public:
     picture_permission_sub = nh_.subscribe("/nao_taking_picture_permission", 1000, &LearningObject::PictureCb, this);
     friend_name_sub = nh_.subscribe("/nao_friend_name", 10, &LearningObject::FriendNameCb, this);
     friend_favorite_sub = nh_.subscribe("/nao_friend_favorite", 10, &LearningObject::FriendFavoriteCb, this);
+    //added 
+    nao_diary_angry_mode_sub = nh_.subscribe("/nao_diary_angry", 10, &LearningObject::NaoDiaryAngryModeCb, this);
+    //added end
     cv::initModule_nonfree(); // SIFTの初期化
   }
   
@@ -152,7 +163,16 @@ public:
   void FriendFavoriteCb(const std_msgs::String::ConstPtr& msg){
     friendfavorite = msg->data.c_str();
   }
-  
+  //added
+  void NaoDiaryAngryModeCb(const std_msgs::String::ConstPtr& msg){
+    ROS_INFO("%s",msg->data.c_str());
+    if(strcmp(msg->data.c_str(),"なおおこ") == 0){
+    nao_diary_angry_mode=1;
+    }else {
+      nao_diary_angry_mode=2;
+    }
+  }
+  //added end
   void FeatureMatching(const sensor_msgs::ImageConstPtr& msg){
     try
       {
@@ -187,6 +207,77 @@ public:
     
     // for  (std::vector<template_data>::iterator pt= template_imgs.begin(); pt !=template_imgs.end(); pt++){
     
+    // added
+    char diary_name2[256];
+    char diary_topic_name2[256];
+    std_msgs::String diary_msg2;
+    std::stringstream ss2;
+    if(nao_diary_angry_mode==1){
+      sprintf(diary_name2, "/home/kochigami/ros/groovy/cultural_festival/diary/diary_angry_nadesugi.html");
+      std::ofstream ofs(diary_name2);
+      ofs << "<html>" << std::endl;
+      ofs << "<body bgcolor=\"lightpink\">" << std::endl;
+      ofs << "<h1 align=\"center\">"<<"<font color =\"mediumvioletred\" size=\"7\">"<<"<b>"<< "いかりのなおにっき ２０１４年１０月２６日" <<"</b>"<< "</h1>";
+      ofs << "<hr>" << endl;
+      ofs << "<h3 align=\"center\">" <<"<font color =\"royalblue\" size=\"6\">"<< "ぶんかさいにいったよ" << "</h3>";
+      ofs << "<p align=\"center\">" << "<font color =\"navy\" size=\"5\">"<< "きょうはマンションのおまつりにいってきたよ。"<<"<br>"<< "</p>"<< std::endl;
+      ofs << "<div align=\"center\">"<<std::endl;
+      //ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/src/image" << std::setfill('0') <<std::setw(4) << count_3<<".png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
+      //ofs << "<img src="<<"\"" << picture_name <<"\""<<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
+      ofs << "<img src=\"/home/kochigami/ros/groovy/cultural_festival/diary/nao2.JPG\"" <<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
+      ofs << "</div>" <<std::endl;
+      ofs << "<p align=\"center\">" << "なお、あたまがかゆくてなでなでしてもらったんだけど、"<<"<br>"<< "</p>"<< std::endl;
+      ofs << "<p align=\"center\">" <<"<font color =\"navy\">"<< "くすぐったくなっちゃった"<< std::endl;
+      //ofs << "<font color =\"magenta\">"<< friendname<< std::endl;
+      ofs <<"<font color =\"navy\">"<< "ちょっといじけちゃったけど、"<< "</p>"<< std::endl;
+      ofs << "<p align=\"center\">" <<"<font color =\"navy\">"<< "またあの子に会えるといいな"<< std::endl;
+      //ofs << "<font color =\"magenta\">"<< friendfavorite<< std::endl;
+      //ofs <<"<font color =\"navy\">"<< "なんだって。"<< "</p>"<< std::endl;
+      //ofs << "<p align=\"center\">" <<"<font color =\"navy\">"<< "きょうはいっしょにあそべてうれしかった。またあえるといいな。"<<"</p>"<< std::endl;
+      ofs << "</body>" << std::endl;
+      ofs << "</html>" << std::endl;
+ 
+      sprintf(diary_topic_name2, "diary_angry_nadesugi.html");
+      ss2 << "firefox /home/kochigami/ros/groovy/cultural_festival/diary/"<<diary_topic_name2;
+      diary_msg2.data=ss2.str();
+      diary_pub.publish(diary_msg2);
+      ROS_INFO("diary published");
+      nao_diary_angry_mode=0;
+    }
+    if(nao_diary_angry_mode==2){
+      sprintf(diary_name2, "/home/kochigami/ros/groovy/cultural_festival/diary/diary_angry_nadenashi.html");
+      std::ofstream ofs(diary_name2);
+      ofs << "<html>" << std::endl;
+      ofs << "<body bgcolor=\"lightpink\">" << std::endl;
+      ofs << "<h1 align=\"center\">"<<"<font color =\"mediumvioletred\" size=\"7\">"<<"<b>"<< "かなしみのなおにっき ２０１４年１０月２６日" <<"</b>"<< "</h1>";
+      ofs << "<hr>" << endl;
+      ofs << "<h3 align=\"center\">" <<"<font color =\"royalblue\" size=\"6\">"<< "ぶんかさいにいったよ" << "</h3>";
+      ofs << "<p align=\"center\">" << "<font color =\"navy\" size=\"5\">"<< "きょうはマンションのおまつりにいってきたよ。"<<"<br>"<< "</p>"<< std::endl;
+      ofs << "<div align=\"center\">"<<std::endl;
+      //ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/src/image" << std::setfill('0') <<std::setw(4) << count_3<<".png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
+      //ofs << "<img src="<<"\"" << picture_name <<"\""<<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
+      ofs << "<img src=\"/home/kochigami/ros/groovy/cultural_festival/diary/nao2.JPG\"" <<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
+      ofs << "</div>" <<std::endl;
+      ofs << "<p align=\"center\">" << "なお、あたまがかゆくてなでなでしてほしかったんだけど、"<<"<br>"<< "</p>"<< std::endl;
+      ofs << "<p align=\"center\">" <<"<font color =\"navy\">"<< "なでてもらえなかった"<< std::endl;
+      //ofs << "<font color =\"magenta\">"<< friendname<< std::endl;
+      ofs <<"<font color =\"navy\">"<< "ちょっといじけちゃったけど、"<< "</p>"<< std::endl;
+      ofs << "<p align=\"center\">" <<"<font color =\"navy\">"<< "またあの子に会えるといいな"<< std::endl;
+      //ofs << "<font color =\"magenta\">"<< friendfavorite<< std::endl;
+      //ofs <<"<font color =\"navy\">"<< "なんだって。"<< "</p>"<< std::endl;
+      //ofs << "<p align=\"center\">" <<"<font color =\"navy\">"<< "きょうはいっしょにあそべてうれしかった。またあえるといいな。"<<"</p>"<< std::endl;
+      ofs << "</body>" << std::endl;
+      ofs << "</html>" << std::endl;
+ 
+      sprintf(diary_topic_name2, "diary_angry_nadenashi.html");
+      ss2 << "firefox /home/kochigami/ros/groovy/cultural_festival/diary/"<<diary_topic_name2;
+      diary_msg2.data=ss2.str();
+      diary_pub.publish(diary_msg2);
+      ROS_INFO("diary published");
+      nao_diary_angry_mode=0;
+    }
+    //added end
+
     if (key==1){
       if(pic_count==0){
 	char picture_name[256];
