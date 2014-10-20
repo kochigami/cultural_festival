@@ -40,7 +40,7 @@
 
 (setq motto3 #f(18.7185 -3.43018 -69.5248 -60.9944 16.7849 91.4977 9.40201 57.4788 64.0755 -48.0792 -14.8513 -4.74374 -42.6251 121.039 -67.9785 4.30665 -14.8513 3.95753 -42.9815 121.039 -67.97 -4.34702 0.173378 4.30429))
 
-;;なでてよー  ;;                                                                             
+;;なでてよー                                                                               
 (setq nadeteyo #f(49.5685 10.5446 -74.2709 -61.5218 -73.4799 51.8585 -10.1978 79.9791 62.4055 93.1628 -14.9392 -4.65585 -40.6915 121.039 -67.9785 4.30665 -14.9392 3.95753 -40.8721 121.039 -67.97 -4.34702 -1.40867 -14.2409))
 
 ;;ありがとう                                                                               
@@ -393,13 +393,11 @@
 	  (send *ni* :play-soundfile "/home/nao/wav_test/naokaraonegai.wav")
 	  (unix:sleep 1)
 	  (send *ni* :play-soundfile "/home/nao/wav_test/onegai.wav")
-	  ;;okマークを見せて                                                                 
-	  (send *ni* :angle-vector-sequence (list ok *start-position*) (list 1000 5000))
-
+	  
 	  (unix:sleep 1)
 	  (send *ni* :play-soundfile "/home/nao/wav_test/onegai2.wav")
-	  (send *ni* :angle-vector-sequence (list osimai *start-position*) (list 1000 3000))
 	  (unix:sleep 2)
+	  ;;okマークを見せて                                                                 
 	  (send *ni* :play-soundfile "/home/nao/wav_test/jyaaikuyo.wav")
 	  (setq rand_num (random 3))
 	  (if (= rand_num 0)
@@ -411,6 +409,10 @@
 	  (if (= rand_num  2)
 	      (send *ni* :play-soundfile "/home/nao/wav_test/nanteiunamae.wav")
 	    )
+	  ;;(send *ni* :angle-vector-sequence (list ok *start-position*) (list 1000 5000))
+	  ;;(send *ni* :wait-interpolation)
+	  ;;(send *ni* :angle-vector-sequence (list osimai *start-position*) (list 1000 3000))
+	  ;;(send *ni* :wait-interpolation)
 	  )
       )
     )
@@ -437,25 +439,25 @@
 	   (if (= sound_decision 0)
 	       (progn
 		 (send *ni* :play-soundfile "/home/nao/wav_test/munyamunya.wav")
-		 (send *ni* :angle-vector-sequence (list munyamunya munyamunya2 munyamunya3 munyamunya4 *start-position*) (list 1000 2000 3000 4000 5000))
+		 (send *ni* :angle-vector-sequence (list munyamunya munyamunya2 munyamunya3 munyamunya4 *start-position*) (list 2000 3000 4000 5000 6000))
 		 )
 	     )
 	   (if (= sound_decision 1)
 	       (progn
 		 (send *ni* :play-soundfile "/home/nao/wav_test/nemunemu.wav")
-		 (send *ni* :angle-vector-sequence (list nemunemu nemunemu2 *start-position*) (list 1000 3200 4200))
+		 (send *ni* :angle-vector-sequence (list nemunemu nemunemu2 *start-position*) (list 2000 4200 5200))
 		 )
 	     )
 	   (if (= sound_decision 2)
 	       (progn
 		 (send *ni* :play-soundfile "/home/nao/wav_test/harahetta.wav")
-		 (send *ni* :angle-vector-sequence (list harahetta harahetta2 harahetta3 harahetta4 *start-position*) (list 1000 1200 2200 2400 2800))
+		 (send *ni* :angle-vector-sequence (list harahetta harahetta2 harahetta3 harahetta4 *start-position*) (list 2000 3200 3200 3400 3800))
 		 )
 	     )
 	   (if (= sound_decision 3)
 	       (progn
 		 (send *ni* :play-soundfile "/home/nao/wav_test/naodayo.wav")
-		 (send *ni* :angle-vector-sequence (list naodayo naodayo2 naodayo3 naodayo4 naodayo5 *start-position*) (list 1000 2000 3000 4000 5000 6000))
+		 (send *ni* :angle-vector-sequence (list naodayo naodayo2 naodayo3 naodayo4 naodayo5 *start-position*) (list 2000 3000 4000 5000 6000 7000))
 		 )
 	     )
 	   )
