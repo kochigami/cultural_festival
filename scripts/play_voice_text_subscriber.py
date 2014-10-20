@@ -28,6 +28,7 @@ except Exception,e:
 
 def callback(data):
     #rospy.loginfo(rospy.get_name() + ": I heard %s" % data.data)
+    time.sleep(2)
     aup.playFile(data.data)
     #play(data.data)
 def listener():
