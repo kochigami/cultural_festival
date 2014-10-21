@@ -116,8 +116,6 @@
 ;;おしまいマークを見せて                                                             
 (setq osimai #f(83.0553 13.0056 -48.3428 -59.6761 8.25942 -18.5427 -14.944 67.1469 61.1751 -21.9753 -14.4997 -4.74374 -39.461 121.039 -67.9785 4.29809 -14.4997 4.13332 -39.5537 121.039 -67.97 -4.34702 0.261268 0.612832))
 
-
-
 ;;initialization
 ;;for nao initialization
 (ros::ros-info "nao initializing")
@@ -144,6 +142,7 @@
 (setq *call_num* 0)
 (setq *pub_num* 0)
 (setq *pre-japanese-char* "っ")
+(setq *nao_secret_num* 0)
 ;;(setq *register-check* 10)
 (setq *launchpad-input* 0)
 ;; for tactile-detect-cb
@@ -279,7 +278,7 @@
 		      ;;ありがとう
 		      (if (= *speak_num4* 0)
 			  (progn
-			    (send *ni* :play-soundfile "/home/nao/wav_test/arigatou_tasukatta.wav")
+			    (send *ni* :play-soundfile "/home/nao/wav_test/arigatou_nao_uresii.wav")
 			    (setq *speak_num4* (+ *speak_num4* 1))
 			    ;;added
 			    (send *ni* :angle-vector-sequence (list arigatou arigatou2 *start-position*) (list 2000 3000 4000))
@@ -292,10 +291,10 @@
 		  (progn
 		    (if (and (= (- *head_touch_count* *head_touch_count_pre*) 0) (or (= *nao_touch_pattern* 1) (= *nao_touch_pattern* 3)))
 			(progn
-			  ;;もういいってば！
+			  ;;ふーんだ！
 			  (if (= *speak_num5* 0)
 			      (progn
-				(send *ni* :play-soundfile "/home/nao/wav_test/mouiitteba.wav")
+				(send *ni* :play-soundfile "/home/nao/wav_test/hu-nda.wav")
 				(send *ni* :play-soundfile "/home/nao/wav_test/nao_ijikeccyatta.wav")
 				(setq *speak_num5* (+ *speak_num5* 1))
 				;;added
@@ -329,12 +328,7 @@
 		  )
 		)
 	      )
-	  )
-	
-	
-	  
-	  
-      
+	  )      
 	;;added end
 	(if (eq *current-behavior* :idle)
 	    (progn
@@ -350,6 +344,7 @@
 	    (if (eq *conversation_finished* 1)
 		(progn
 		  (setq *current-behavior* :idle)
+		  (unix:sleep 3)
 		  (setq *conversation_finished* 0)
 		  (send *ni* :play-soundfile "/home/nao/wav_test/nao_to_asondakoto_wasurenaidene.wav")
 		  ;;added 
@@ -384,18 +379,21 @@
     (if (eq *current-behavior* :talking)
 	(progn
 	  ;;ナオにカードを持たせて、身振りで説明してもらおう
+	  (send *ni* :play-soundfile "/home/nao/wav_test/aisatu_ga_okuretane.wav")
 	  (send *ni* :play-soundfile "/home/nao/wav_test/konnichiwa.wav")
-	  (send *ni* :play-soundfile "/home/nao/wav_test/nao_korekara_situmon_surune.wav")
+	  ;;(send *ni* :play-soundfile "/home/nao/wav_test/nao_korekara_situmon_surune.wav")
 	  ;;added
 	  (send *ni* :angle-vector-sequence (list siritaina siritaina2 *start-position*) (list 3000 4000 5000))
 	  ;;added end 
-	  (send *ni* :play-soundfile "/home/nao/wav_test/nao_kimi_no_koto_siritaino.wav")
-	  (send *ni* :play-soundfile "/home/nao/wav_test/naokaraonegai.wav")
+	  (send *ni* :play-soundfile "/home/nao/wav_test/nao_anatanokoto_siritainaa.wav")
+	  ;;(send *ni* :play-soundfile "/home/nao/wav_test/naokaraonegai.wav")
+	  (send *ni* :play-soundfile "/home/nao/wav_test/korekara_anata_ni_situmon_surukara.wav")
 	  (unix:sleep 1)
-	  (send *ni* :play-soundfile "/home/nao/wav_test/onegai.wav")
-	  
+	  ;;(send *ni* :play-soundfile "/home/nao/wav_test/onegai.wav")
+	  (send *ni* :play-soundfile "/home/nao/wav_test/sonomoji_ok.wav")
 	  (unix:sleep 1)
-	  (send *ni* :play-soundfile "/home/nao/wav_test/onegai2.wav")
+	  ;;(send *ni* :play-soundfile "/home/nao/wav_test/onegai2.wav")
+	  (send *ni* :play-soundfile "/home/nao/wav_test/tango_osimai.wav")
 	  (unix:sleep 2)
 	  ;;okマークを見せて                                                                 
 	  (send *ni* :play-soundfile "/home/nao/wav_test/jyaaikuyo.wav")
@@ -549,13 +547,7 @@
                     )
                 )
 	      
-	      ;;added if name is nao, nao publishes topic
-	      (if (and (string= *pre-japanese-char* "な") (string= japanese-char "お"))
-		  (progn
-		    
-		    )
-		  )
-	      ;;added
+   	      ;;added
               (if (= *call_num* 0)
                   (progn
 		    ;;ファイルを全部Naoに入れてここにも記入
