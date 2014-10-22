@@ -515,10 +515,13 @@ public:
 	// cv::imshow(window_name, out);
        	continue;
       }
-      sprintf(window_name, "match_result%d",count);
-      // if(!out.empty());
-      cv::imshow(window_name, out);
-      
+
+      //////////////必要ならコメントアウト外して/////////////////////
+      //sprintf(window_name, "match_result%d",count);
+      //cv::imshow(window_name, out);
+      /////////////ここまで//////////////////////////////////////////
+
+
 	//cv::waitKey(20); //書くのを忘れていた　忘れるとimshowの結果が出てこない
 	// }
       // else{

@@ -60,7 +60,6 @@
 				   (setq nao-name-msg (instance std_msgs::string :init))
 				   (send nao-name-msg :data "なまえがなお")
 				   (ros::publish "/nao_secret_mode_name" nao-name-msg)
-				   (send *ni* :play-soundfile "/home/nao/wav_test/ok.wav")
 				   )
 			       )
 			     
@@ -69,19 +68,18 @@
 				   (setq nao-favorite-msg (instance std_msgs::string :init))
 				   (send nao-favorite-msg :data "すきなものがなお")
 				   (ros::publish "/nao_secret_mode_favorite" nao-favorite-msg)
-				   (send *ni* :play-soundfile "/home/nao/wav_test/ok.wav")
 				   )
 			       )
 
 			     ;;added end
 			     
 			     (unix:sleep 1)
-			     (setq rand_num (random 5))
+			     (setq rand_num (random 4))
 			     (if (= rand_num 0)
 				 (send *ni* :play-soundfile "/home/nao/wav_test/sounanda.wav")
 			       )
 			     (if (= rand_num 1)
-				 (send *ni* :play-soundfile "/home/nao/wav_test/watashimo.wav")
+				 (send *ni* :play-soundfile "/home/nao/wav_test/naruheso.wav")
 			       )
 			     (if (= rand_num 2)
 				 (send *ni* :play-soundfile "/home/nao/wav_test/humuhumu.wav")
@@ -89,14 +87,11 @@
 			     (if (= rand_num 3)
 				 (send *ni* :play-soundfile "/home/nao/wav_test/sorya_bikkuri_de_gozaru.wav")
 			       )
-			     (if (= rand_num 4)
-				 (send *ni* :play-soundfile "/home/nao/wav_test/naruheso.wav")
-			       )
 			     (send *ni* :angle-vector-sequence (list favorite_interview  *start-position*) (list 2000 3000))
 			     (unix:sleep 1)
 			     (send *ni* :play-soundfile "/home/nao/wav_test/syasinnwo_toruyo_hi_cheese.wav")
 			     (send *ni* :play-soundfile "/home/nao/wav_test/kasya.wav")
-			     (unix:sleep 7) ;;要調整
+			     (unix:sleep 4) ;;要調整
 			     (ros::publish "/nao_friend_name" msg2)
 			     (ros::publish "/nao_friend_favorite" msg3)
 			     (ros::publish "/nao_taking_picture_permission" msg)
