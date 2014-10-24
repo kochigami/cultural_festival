@@ -7,11 +7,15 @@
   <!--face recognition-->
   <include file="$(find cultural_festival)/launch/nao_face_detect_demo.launch"/>
   <!--main program about nao's movement-->
-
   <node name="main_program"
         pkg="roseus" type="roseus"
         args="$(find cultural_festival)/euslisp/cultural_fest_2014_10_26.l"/>
 
+  <!--programs for counting launchpad input-->
+  <node name="launchpad_count"
+        pkg="cultural_festival" type="launchpad-record"/>
+
+  
    <!--launchpad-->
   <include file="$(find cultural_festival)/launch/launchpad_hiragana_sender.launch"/>
 
@@ -19,14 +23,11 @@
   <node name="hiragana_subscribe"
         pkg="roseus" type="roseus"
         args="$(find cultural_festival)/euslisp/hiragana_subscribe.l"/>
-  <!--launchpad-->
-  <!--node name="hiragana_send_by_launchpad"
-        pkg="roseus" type="roseus"
-        args="$(find cultural_festival)/euslisp/launchpad-hiragana-sender.l"/-->
 
   <!--for diary as a html file display-->
   <node name="nao_japanese_character_recognition"
         pkg="cultural_festival" type="diary_publish.py"/>
+
   <!--for nao speaking-->
   <node name="nao_speaking"
         pkg="cultural_festival" type="play_voice_text_subscriber.py" args="$(arg nao_ip)" />
