@@ -76,7 +76,7 @@ public:
     ROS_INFO("before read");
     for(int i=1; i<49; i++){   
       //sprintf(fname, "/home/kochigami/ros/groovy/cultural_festival/src/image%04d.png",i);
-      sprintf(fname, "/home/kochigami/Desktop/karuta/img%04d.png",i);
+      sprintf(fname, "/home/kochigami/ros/groovy/karuta/img%04d.png",i);
       //ROS_INFO("template file name: %s", fname);
       
       cv::Mat dst_img=cv::imread(fname);

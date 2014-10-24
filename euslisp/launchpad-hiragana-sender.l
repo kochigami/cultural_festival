@@ -84,7 +84,9 @@
      (71 (hiragana_sender "ろ"))
      (0  (hiragana_sender "わ"))
      (1  (hiragana_sender "を"))
-     (2  (hiragana_sender "ん")) 
+     (2  (hiragana_sender "ん"))
+     (3  (hiragana_sender "おわり"))
+     (4  (hiragana_sender "おしまい"))
      )
    )
   ;; 同時押しの場合は後ろの番号を返す

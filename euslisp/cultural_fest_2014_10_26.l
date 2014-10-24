@@ -11,6 +11,7 @@
 
 (ros::advertise "nao_learn_word" std_msgs::string 1)
 (ros::advertise "nao_diary_angry" std_msgs::string 1)
+(ros::advertise "launchpad_hiragana_count" std_msgs::string 1)
 ;;(ros::advertise "nao_regist_stop" std_msgs::string 1)
 
 (setq *start-position* #f(80.7701 11.1598 -46.4971 -59.764 7.46839 82.2691 -10.3736 45.965 59.5051 -6.94585 -14.3239 -4.48007 -39.6368 121.039 -67.9785 4.30665 -14.3239 4.48488 -39.9931 121.039 -67.97 -4.34702 0.788627 3.0738))
@@ -143,6 +144,7 @@
 (setq *pub_num* 0)
 (setq *pre-japanese-char* "っ")
 (setq *nao_secret_num* 0)
+(setq *launchpad_count* 0)
 ;;(setq *register-check* 10)
 (setq *launchpad-input* 0)
 ;; for tactile-detect-cb
@@ -185,17 +187,17 @@
     (if (eq *current-behavior* :eyecontact)
 	(if (> (send (ros::time- now *behavior-start-time*) :to-sec) *idle-check-timeout*)
 	    (progn
-	      (if (= (random 2) 0) 
-		  (progn
-		    ;;added 
-		    ;;(set-behavior :talking)
-		    (set-behavior :asking)
-		    ;;added end
-		    )
-		(progn
+	        ;;(if (= (random 2) 0) 
+	        ;;	  (progn
+	        ;;	    ;;added 
+	        ;;	    ;;(set-behavior :talking)
+	        ;;	    (set-behavior :asking)
+	        ;;	    ;;added end
+	        ;;	    )
+	       (progn
 		  (setq *current-behavior* :idle)
 		  )
-		)
+	       ;;)
 	      )
 	  
       ;;idleのとき ある確率で:look-and-speakモードに移行する(キョロキョロしてお話)
@@ -491,6 +493,17 @@
 	  ;;"おわり"を1つ受け取ったら1度だけrostopic pubする  
 	  (if (= *pub_num* 1)
 	      (progn
+		;;added
+		(if (= *launchpad_count* 1)
+		    (progn
+		      (setq launchpad-count-msg (instance std_msgs::string :init))     
+		      (send launchpad-count-msg :data (elt *character-list* 0))
+		      (ros::publish "launchpad_hiragana_count" launchpad-count-msg)
+		      
+		      
+		      )
+		  )
+		;;added end
 		(setq publish-msg (instance std_msgs::string :init))
 		;;とりあえず、最初に認識した答えを登録する                   
 		;;変える必要があるかも                                       
@@ -499,6 +512,7 @@
 		(setq *character-list* nil)
 		(send *ni* :play-soundfile "/home/nao/wav_test/ok.wav")
 		(setq *call_num* 0)
+		
 		)
 	    )
 	  )
@@ -534,6 +548,9 @@
 	      ;;launchpadからの入力であればリストの最初に代入 (入力の修正用として作用)
 	      (if (= *launchpad-input* 1)
 		  (progn
+		    ;;added
+		    (setq *launchpad_count* 1)
+		    ;;added end
 		    (setf (elt *character-list* 0)  japanese-char)	  
 		    (setq *launchpad-input* 0)
 		    )
