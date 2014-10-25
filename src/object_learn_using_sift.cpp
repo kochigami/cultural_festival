@@ -76,7 +76,8 @@ public:
     ROS_INFO("before read");
     for(int i=1; i<49; i++){   
       //sprintf(fname, "/home/kochigami/ros/groovy/cultural_festival/src/image%04d.png",i);
-      sprintf(fname, "/home/kochigami/ros/groovy/karuta/img%04d.png",i);
+      //sprintf(fname, "/home/kochigami/ros/groovy/karuta/img%04d.png",i);
+      sprintf(fname, "/home/kochigami/Desktop/karuta/img%04d.png",i);
       //ROS_INFO("template file name: %s", fname);
       
       cv::Mat dst_img=cv::imread(fname);
@@ -270,7 +271,7 @@ public:
       ofs << "<h3 align=\"center\">" <<"<font color =\"magenta\" size=\"5\">"<< "ぶんかさいにいったよ" << "</h3>";
       ofs << "<p align=\"center\">" << "<font color =\"deeppink\" size=\"5\">"<< "きょうはマンションのおまつりにいってきたよ。"<<"<br>"<< "</p>"<< std::endl;
       ofs << "<div align=\"center\">"<<std::endl;
-      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/diary/nao2.JPG\""<< " "<<"height=\"320\" alt=\"test\" />" << std::endl;
+      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/diary/naooko.jpg\""<< " "<<"height=\"320\" alt=\"test\" />" << std::endl;
       ofs << "</div>" <<std::endl;
       ofs << "<p align=\"center\" size=\"6\">" << "なお、なでなでしてもらったんだけど"<<"<br>"<< "</p>"<< std::endl;
       ofs <<"<p align=\"center\">"<<"<font color =\"deeppink\" size=\"5\">"<< "くすぐったくなっちゃった"<< std::endl;
@@ -313,7 +314,7 @@ public:
       ofs << "<p align=\"center\">" << "<font color =\"indigo\" size=\"5\">"<< "きょうはマンションのおまつりにいってきたよ。"<<"<br>"<<"</p>"<< std::endl;
       ofs << "<div align=\"center\">"<<std::endl;
       // ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/src/image" << std::setfill('0') <<std::setw(4) << count_3<<".png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/diary/nao2.JPG\""<< " "<<"height=\"320\" alt=\"test\" />" << std::endl;
+      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/diary/naonamida.jpg\""<< " "<<"height=\"320\" alt=\"test\" />" << std::endl;
       ofs << "</div>" <<std::endl;
       ofs << "<p align=\"center\">" << "なお、なでなでしてほしかったんだけど"<<"<br>"<< "</p>"<< std::endl;
       ofs <<"<p align=\"center\">"<<"<font color =\"indigo\" size=\"5\">"<< "なでてくれなかった"<< "</p>"<< std::endl;
@@ -366,6 +367,18 @@ public:
 	  int diary_pattern = rand()%3;
 	  if(diary_pattern==0){
 	    ofs << "<html>" << std::endl;
+	    if(nao_secret_name==1 or nao_secret_favorite==1){
+	      ofs << "<head>" << std::endl;
+	      ofs << "<style type=\"text/css\">" << std::endl;
+	      ofs << "<!--" << std::endl;
+	      ofs << "body   {" << std::endl;
+	      ofs << " background-image:url(\"/home/kochigami/ros/groovy/cultural_festival/diary/hana.jpg\");"<< std::endl;
+	      ofs <<  "background-repeat:repeat;"<< std::endl;
+	      ofs << "}" << std::endl;
+	      ofs << "-->"<< std::endl;
+	      ofs << "</style>" << std::endl;
+	      ofs << "</head>" << std::endl;
+	    }
 	    ofs << "<body bgcolor=\"lightpink\">" << std::endl;
 	    ofs << "<h1 align=\"center\">"<<"<font color =\"mediumvioletred\" size=\"7\">"<<"<b>"<< "なおにっき ２０１４年１０月２６日" <<"</b>"<< "</h1>";
 	    ofs << "<hr>" << endl;
@@ -397,6 +410,18 @@ public:
 	  }
 	  if(diary_pattern==1){
 	    ofs << "<html>" << std::endl;
+	    if(nao_secret_name==1 or nao_secret_favorite==1){
+	      ofs << "<head>" << std::endl;
+	      ofs << "<style type=\"text/css\">" << std::endl;
+	      ofs << "<!--" << std::endl;
+	      ofs << "body   {" << std::endl;
+	      ofs << " background-image:url(\"/home/kochigami/ros/groovy/cultural_festival/diary/bluebird.jpg\");"<< std::endl;
+	      ofs <<  "background-repeat:repeat;"<< std::endl;
+	      ofs << "}" << std::endl;
+	      ofs << "-->"<< std::endl;
+	      ofs << "</style>" << std::endl;
+	      ofs << "</head>" << std::endl;
+	    }
 	    ofs << "<body bgcolor=\"paleturquoise\">" << std::endl;
 	    ofs << "<h1 align=\"center\">"<<"<font color =\"midnightblue\" size=\"7\">"<<"<b>"<< "なおにっき ２０１４年１０月２６日" <<"</b>"<< "</h1>";
 	    ofs << "<hr>" << endl;
@@ -429,6 +454,18 @@ public:
 	  
 	  if(diary_pattern==2){
 	    ofs << "<html>" << std::endl;
+	    if(nao_secret_name==1 or nao_secret_favorite==1){
+	      ofs << "<head>" << std::endl;
+	      ofs << "<style type=\"text/css\">" << std::endl;
+	      ofs << "<!--" << std::endl;
+	      ofs << "body   {" << std::endl;
+	      ofs << " background-image:url(\"/home/kochigami/ros/groovy/cultural_festival/diary/bluebird.jpg\");"<< std::endl;
+	      ofs <<  "background-repeat:repeat;"<< std::endl;
+	      ofs << "}" << std::endl;
+	      ofs << "-->"<< std::endl;
+	      ofs << "</style>" << std::endl;
+	      ofs << "</head>" << std::endl;
+	    }
 	    ofs << "<body bgcolor=\"wheat\">" << std::endl;
 	    ofs << "<h1 align=\"center\">"<<"<font color =\"crimson\" size=\"7\">"<<"<b>"<< "なおにっき ２０１４年１０月２６日" <<"</b>"<< "</h1>";
 	    ofs << "<hr>" << endl;
