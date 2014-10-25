@@ -77,7 +77,7 @@ public:
     for(int i=1; i<49; i++){   
       //sprintf(fname, "/home/kochigami/ros/groovy/cultural_festival/src/image%04d.png",i);
       //sprintf(fname, "/home/kochigami/ros/groovy/karuta/img%04d.png",i);
-      sprintf(fname, "/home/kochigami/Desktop/karuta/img%04d.png",i);
+      sprintf(fname, "/home/kochigami/ros/groovy/cultural_festival/karuta/img%04d.png",i);
       //ROS_INFO("template file name: %s", fname);
       
       cv::Mat dst_img=cv::imread(fname);
@@ -271,7 +271,7 @@ public:
       ofs << "<h3 align=\"center\">" <<"<font color =\"magenta\" size=\"5\">"<< "ぶんかさいにいったよ" << "</h3>";
       ofs << "<p align=\"center\">" << "<font color =\"deeppink\" size=\"5\">"<< "きょうはマンションのおまつりにいってきたよ。"<<"<br>"<< "</p>"<< std::endl;
       ofs << "<div align=\"center\">"<<std::endl;
-      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/diary/naooko.jpg\""<< " "<<"height=\"320\" alt=\"test\" />" << std::endl;
+      ofs << "<img src=\"/home/kochigami/ros/groovy/cultural_festival/diary/naooko.jpg\""<< " "<<"height=\"320\" alt=\"test\" />" << std::endl;
       ofs << "</div>" <<std::endl;
       ofs << "<p align=\"center\" size=\"6\">" << "なお、なでなでしてもらったんだけど"<<"<br>"<< "</p>"<< std::endl;
       ofs <<"<p align=\"center\">"<<"<font color =\"deeppink\" size=\"5\">"<< "くすぐったくなっちゃった"<< std::endl;
@@ -314,7 +314,7 @@ public:
       ofs << "<p align=\"center\">" << "<font color =\"indigo\" size=\"5\">"<< "きょうはマンションのおまつりにいってきたよ。"<<"<br>"<<"</p>"<< std::endl;
       ofs << "<div align=\"center\">"<<std::endl;
       // ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/src/image" << std::setfill('0') <<std::setw(4) << count_3<<".png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-      ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/diary/naonamida.jpg\""<< " "<<"height=\"320\" alt=\"test\" />" << std::endl;
+      ofs << "<img src=\"/home/kochigami/ros/groovy/cultural_festival/diary/naonamida.jpg\""<< " "<<"height=\"320\" alt=\"test\" />" << std::endl;
       ofs << "</div>" <<std::endl;
       ofs << "<p align=\"center\">" << "なお、なでなでしてほしかったんだけど"<<"<br>"<< "</p>"<< std::endl;
       ofs <<"<p align=\"center\">"<<"<font color =\"indigo\" size=\"5\">"<< "なでてくれなかった"<< "</p>"<< std::endl;
@@ -364,7 +364,7 @@ public:
 	  std::ofstream ofs(diary_name);
 	  // ファイルに1行ずつ書き込み
 	  
-	  int diary_pattern = rand()%3;
+	  int diary_pattern = rand()%2;
 	  if(diary_pattern==0){
 	    ofs << "<html>" << std::endl;
 	    if(nao_secret_name==1 or nao_secret_favorite==1){
@@ -452,49 +452,49 @@ public:
 	    ofs << "</html>" << std::endl;
 	  }
 	  
-	  if(diary_pattern==2){
-	    ofs << "<html>" << std::endl;
-	    if(nao_secret_name==1 or nao_secret_favorite==1){
-	      ofs << "<head>" << std::endl;
-	      ofs << "<style type=\"text/css\">" << std::endl;
-	      ofs << "<!--" << std::endl;
-	      ofs << "body   {" << std::endl;
-	      ofs << " background-image:url(\"/home/kochigami/ros/groovy/cultural_festival/diary/bluebird.jpg\");"<< std::endl;
-	      ofs <<  "background-repeat:repeat;"<< std::endl;
-	      ofs << "}" << std::endl;
-	      ofs << "-->"<< std::endl;
-	      ofs << "</style>" << std::endl;
-	      ofs << "</head>" << std::endl;
-	    }
-	    ofs << "<body bgcolor=\"wheat\">" << std::endl;
-	    ofs << "<h1 align=\"center\">"<<"<font color =\"crimson\" size=\"7\">"<<"<b>"<< "なおにっき ２０１４年１０月２６日" <<"</b>"<< "</h1>";
-	    ofs << "<hr>" << endl;
-	    ofs << "<h3 align=\"center\">" <<"<font color =\"orangered\" size=\"6\">"<< "ぶんかさいでおともだちができたよ" << "</h3>";
-	    ofs << "<p align=\"center\">" << "<font color =\"orangered\" size=\"5\">"<< "きょうはマンションのおまつりにいってきたよ。"<<"<br>"<< "</p>"<< std::endl;
-	    ofs << "<div align=\"center\">"<<std::endl;
-	    //ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/src/image" << std::setfill('0') <<std::setw(4) << count_3<<".png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-	    ofs << "<img src="<<"\"" << picture_name <<"\""<<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
-	    ofs << "<img src=\"/home/kochigami/ros/groovy/cultural_festival/diary/nao.JPG\"" <<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
-	    ofs << "</div>" <<std::endl;
-	    ofs << "<p align=\"center\">" << "おともだちができたよ。"<<"<br>"<< "</p>"<< std::endl;
-	    ofs << "<p align=\"center\">" <<"<font color =\"orangered\">"<< "なまえは"<< std::endl;
-	    ofs << "<font color =\"magenta\">"<< friendname<< std::endl;
-	    ofs <<"<font color =\"orangered\">"<< "っていうんだよ。"<< "</p>"<< std::endl;
-	    if (nao_secret_name==1){
-	      ofs << "<p align=\"deeppink\">" <<"<font color =\"deeppink\">"<< "なおと同じ名前だよ！"<< std::endl;
-	      nao_secret_name=0;
-	    }
-	    ofs << "<p align=\"center\">" <<"<font color =\"orangered\">"<< "すきなものは"<< std::endl;
-	    ofs << "<font color =\"magenta\">"<< friendfavorite<< std::endl;
-	    ofs <<"<font color =\"navy\">"<< "なんだって。"<< "</p>"<< std::endl;
-	    if (nao_secret_favorite==1){
-	      ofs << "<p align=\"center\">" <<"<font color =\"deeppink\">"<< "なおが好きなんだって 照れるなあ"<< std::endl;
-	      nao_secret_favorite=0;
-	    }
-	    ofs << "<p align=\"center\">" <<"<font color =\"orangered\">"<< "きょうはいっしょにあそべてうれしかった。またあえるといいな。"<<"</p>"<< std::endl;
-	    ofs << "</body>" << std::endl;
-	    ofs << "</html>" << std::endl;
-	  }
+	  // if(diary_pattern==2){
+	  //   ofs << "<html>" << std::endl;
+	  //   if(nao_secret_name==1 or nao_secret_favorite==1){
+	  //     ofs << "<head>" << std::endl;
+	  //     ofs << "<style type=\"text/css\">" << std::endl;
+	  //     ofs << "<!--" << std::endl;
+	  //     ofs << "body   {" << std::endl;
+	  //     ofs << " background-image:url(\"/home/kochigami/ros/groovy/cultural_festival/diary/bluebird.jpg\");"<< std::endl;
+	  //     ofs <<  "background-repeat:repeat;"<< std::endl;
+	  //     ofs << "}" << std::endl;
+	  //     ofs << "-->"<< std::endl;
+	  //     ofs << "</style>" << std::endl;
+	  //     ofs << "</head>" << std::endl;
+	  //   }
+	  //   ofs << "<body bgcolor=\"wheat\">" << std::endl;
+	  //   ofs << "<h1 align=\"center\">"<<"<font color =\"crimson\" size=\"7\">"<<"<b>"<< "なおにっき ２０１４年１０月２６日" <<"</b>"<< "</h1>";
+	  //   ofs << "<hr>" << endl;
+	  //   ofs << "<h3 align=\"center\">" <<"<font color =\"orangered\" size=\"6\">"<< "ぶんかさいでおともだちができたよ" << "</h3>";
+	  //   ofs << "<p align=\"center\">" << "<font color =\"orangered\" size=\"5\">"<< "きょうはマンションのおまつりにいってきたよ。"<<"<br>"<< "</p>"<< std::endl;
+	  //   ofs << "<div align=\"center\">"<<std::endl;
+	  //   //ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/src/image" << std::setfill('0') <<std::setw(4) << count_3<<".png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
+	  //   ofs << "<img src="<<"\"" << picture_name <<"\""<<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
+	  //   ofs << "<img src=\"/home/kochigami/ros/groovy/cultural_festival/diary/nao.JPG\"" <<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
+	  //   ofs << "</div>" <<std::endl;
+	  //   ofs << "<p align=\"center\">" << "おともだちができたよ。"<<"<br>"<< "</p>"<< std::endl;
+	  //   ofs << "<p align=\"center\">" <<"<font color =\"orangered\">"<< "なまえは"<< std::endl;
+	  //   ofs << "<font color =\"magenta\">"<< friendname<< std::endl;
+	  //   ofs <<"<font color =\"orangered\">"<< "っていうんだよ。"<< "</p>"<< std::endl;
+	  //   if (nao_secret_name==1){
+	  //     ofs << "<p align=\"deeppink\">" <<"<font color =\"deeppink\">"<< "なおと同じ名前だよ！"<< std::endl;
+	  //     nao_secret_name=0;
+	  //   }
+	  //   ofs << "<p align=\"center\">" <<"<font color =\"orangered\">"<< "すきなものは"<< std::endl;
+	  //   ofs << "<font color =\"magenta\">"<< friendfavorite<< std::endl;
+	  //   ofs <<"<font color =\"navy\">"<< "なんだって。"<< "</p>"<< std::endl;
+	  //   if (nao_secret_favorite==1){
+	  //     ofs << "<p align=\"center\">" <<"<font color =\"deeppink\">"<< "なおが好きなんだって 照れるなあ"<< std::endl;
+	  //     nao_secret_favorite=0;
+	  //   }
+	  //   ofs << "<p align=\"center\">" <<"<font color =\"orangered\">"<< "きょうはいっしょにあそべてうれしかった。またあえるといいな。"<<"</p>"<< std::endl;
+	  //   ofs << "</body>" << std::endl;
+	  //   ofs << "</html>" << std::endl;
+	  // }
 
 	  
 	  std_msgs::String diary_msg, conversation_msg;

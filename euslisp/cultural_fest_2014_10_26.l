@@ -272,7 +272,7 @@
 		      )
 		  )
 		)
-	      (when (> (send (ros::time- now *behavior-start-time*) :to-sec) 15)
+	      (when (> (send (ros::time- now *behavior-start-time*) :to-sec) 20)
 		(if (or (and (> (- *head_touch_count* *head_touch_count_pre*) 0) (= *nao_touch_pattern* 1))
 			(and (< (- *head_touch_count* *head_touch_count_pre*) 5) (= *nao_touch_pattern* 0))
 			(and (> (- *head_touch_count*  *head_touch_count_pre*) 0) (= *nao_touch_pattern* 3)))
