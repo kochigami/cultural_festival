@@ -9,11 +9,13 @@
   <!--main program about nao's movement-->
   <node name="main_program"
         pkg="roseus" type="roseus"
-        args="$(find cultural_festival)/euslisp/cultural_fest_2014_10_26.l"/>
+        args="$(find cultural_festival)/euslisp/cultural_fest_2014_10_26.l"
+	respawn="true"/>
 
   <!--programs for counting launchpad input-->
   <node name="launchpad_count"
-        pkg="cultural_festival" type="launchpad-record"/>
+        pkg="cultural_festival" type="launchpad-record"
+	respawn="true"/>
 
   
    <!--launchpad-->
@@ -22,15 +24,18 @@
   <!--subscribe japanese character topic and collect one character to one word-->
   <node name="hiragana_subscribe"
         pkg="roseus" type="roseus"
-        args="$(find cultural_festival)/euslisp/hiragana_subscribe.l"/>
+        args="$(find cultural_festival)/euslisp/hiragana_subscribe.l"
+	respawn="true"/>
 
   <!--for diary as a html file display-->
   <node name="nao_japanese_character_recognition"
-        pkg="cultural_festival" type="diary_publish.py"/>
+        pkg="cultural_festival" type="diary_publish.py"
+	respawn="true"/>
 
   <!--for nao speaking-->
   <node name="nao_speaking"
-        pkg="cultural_festival" type="play_voice_text_subscriber.py" args="$(arg nao_ip)" />
+        pkg="cultural_festival" type="play_voice_text_subscriber.py" args="$(arg nao_ip)" 
+	respawn="true"/>
 
 
 </launch>
