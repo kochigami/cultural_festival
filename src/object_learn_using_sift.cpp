@@ -80,8 +80,8 @@ public:
       //sprintf(fname, "/home/kochigami/ros/groovy/cultural_festival/src/image%04d.png",i);
       //sprintf(fname, "/home/kochigami/ros/groovy/karuta/img%04d.png",i);
       sprintf(fname, (default_template_file_name+std::string("/karuta/img%04d.png")).c_str(),i);
-      std::ofstream test("/home/kochigami/ros/groovy/cultural_festival/diary/test.txt");
-      test<<fname<<std::endl;
+      //std::ofstream test("/home/kochigami/ros/groovy/cultural_festival/diary/test.txt");
+      //test<<fname<<std::endl;
       //ROS_INFO("template file name: %s", fname);
       
       cv::Mat dst_img=cv::imread(fname);
