@@ -14,6 +14,7 @@
 #include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/image_encodings.h>
 #include <std_msgs/String.h>
+#include <rospack/rospack.h>
 
 //http://whoopsidaisies.hatenablog.com/entry/2013/12/07/135810#SampleCode
 //http:wiki.ros.org/cv_bridge/Tutorials/UsingCvBridgeToConvertBetweenROSImagesAndOpenCVImages
@@ -64,6 +65,7 @@ public:
   cv::Mat input_img;
   string friendname;
   string friendfavorite;
+  std::string default_template_file_name;
   int key;
   int pic_count;
   int count2;
@@ -77,7 +79,9 @@ public:
     for(int i=1; i<49; i++){   
       //sprintf(fname, "/home/kochigami/ros/groovy/cultural_festival/src/image%04d.png",i);
       //sprintf(fname, "/home/kochigami/ros/groovy/karuta/img%04d.png",i);
-      sprintf(fname, "/home/kochigami/ros/groovy/cultural_festival/karuta/img%04d.png",i);
+      sprintf(fname, (default_template_file_name+std::string("/karuta/img%04d.png")).c_str(),i);
+      std::ofstream test("/home/kochigami/ros/groovy/cultural_festival/diary/test.txt");
+      test<<fname<<std::endl;
       //ROS_INFO("template file name: %s", fname);
       
       cv::Mat dst_img=cv::imread(fname);
@@ -106,6 +110,14 @@ public:
   LearningObject()
     :it_(nh_),detector (cv::FeatureDetector::create("SIFT")), extractor (cv::DescriptorExtractor::create("SIFT")), matcher (cv::DescriptorMatcher::create("BruteForce"))
   {
+    
+    rospack::Rospack rp;
+    std::vector<std::string> search_path;
+    rp.getSearchPathFromEnv(search_path);
+    rp.crawl(search_path, 1);
+    std::string path;
+    if (rp.find("cultural_festival",path)==true) default_template_file_name = path;
+
     // // for test
     // // write html
     
@@ -251,14 +263,14 @@ public:
     std::stringstream ss2;
     
     if(nao_diary_angry_mode==1){
-      sprintf(diary_name2, "/home/kochigami/ros/groovy/cultural_festival/diary/diary_angry_nadesugi.html");
+      sprintf(diary_name2, (default_template_file_name+std::string("/diary/diary_angry_nadesugi.html")).c_str());
       std::ofstream ofs(diary_name2);
       ofs << "<html>" << std::endl;
       ofs << "<head>" << std::endl;
       ofs << "<style type=\"text/css\">" << std::endl;
       ofs << "<!--" << std::endl;
       ofs << "body   {" << std::endl;
-      ofs << " background-image:url(\"/home/kochigami/ros/groovy/cultural_festival/diary/2288.gif\");"<< std::endl;
+      ofs << " background-image:url(\"" << default_template_file_name<< "/diary/2288.gif\");"<< std::endl;
       ofs <<  "background-repeat:repeat;"<< std::endl;
       ofs << "}" << std::endl;
       ofs << "-->"<< std::endl;
@@ -271,7 +283,7 @@ public:
       ofs << "<h3 align=\"center\">" <<"<font color =\"magenta\" size=\"5\">"<< "ぶんかさいにいったよ" << "</h3>";
       ofs << "<p align=\"center\">" << "<font color =\"deeppink\" size=\"5\">"<< "きょうはマンションのおまつりにいってきたよ。"<<"<br>"<< "</p>"<< std::endl;
       ofs << "<div align=\"center\">"<<std::endl;
-      ofs << "<img src=\"/home/kochigami/ros/groovy/cultural_festival/diary/naooko.jpg\""<< " "<<"height=\"320\" alt=\"test\" />" << std::endl;
+      ofs << "<img src=\""<<default_template_file_name <<"/diary/naooko.jpg\""<< " "<<"height=\"320\" alt=\"test\" />" << std::endl;
       ofs << "</div>" <<std::endl;
       ofs << "<p align=\"center\" size=\"6\">" << "なお、なでなでしてもらったんだけど"<<"<br>"<< "</p>"<< std::endl;
       ofs <<"<p align=\"center\">"<<"<font color =\"deeppink\" size=\"5\">"<< "くすぐったくなっちゃった"<< std::endl;
@@ -282,7 +294,7 @@ public:
       ofs << "</html>" << std::endl;
  
       sprintf(diary_topic_name2, "diary_angry_nadesugi.html");
-      ss2 << "firefox /home/kochigami/ros/groovy/cultural_festival/diary/"<<diary_topic_name2;
+      ss2 << "firefox"<<" "<< default_template_file_name<<"/diary/"<<diary_topic_name2;
       diary_msg2.data=ss2.str();
       diary_pub.publish(diary_msg2);
       ROS_INFO("diary published");
@@ -290,7 +302,7 @@ public:
     }
 
     if(nao_diary_angry_mode==2){
-      sprintf(diary_name2, "/home/kochigami/ros/groovy/cultural_festival/diary/diary_angry_nadenashi.html");
+      sprintf(diary_name2, (default_template_file_name+std::string("/diary/diary_angry_nadenashi.html")).c_str());
       std::ofstream ofs(diary_name2);
             
       // // ファイルに1行ずつ書き込み
@@ -300,7 +312,7 @@ public:
       ofs << "<style type=\"text/css\">" << std::endl;
       ofs << "<!--" << std::endl;
       ofs << "body   {" << std::endl;
-      ofs << " background-image:url(\"/home/kochigami/ros/groovy/cultural_festival/diary/kuma-namida.jpg\");"<< std::endl;
+      ofs << " background-image:url(\"" << default_template_file_name<<"/diary/kuma-namida.jpg\");"<< std::endl;
       ofs <<  "background-repeat:repeat;"<< std::endl;
       ofs << "}" << std::endl;
       ofs << "-->"<< std::endl;
@@ -314,7 +326,7 @@ public:
       ofs << "<p align=\"center\">" << "<font color =\"indigo\" size=\"5\">"<< "きょうはマンションのおまつりにいってきたよ。"<<"<br>"<<"</p>"<< std::endl;
       ofs << "<div align=\"center\">"<<std::endl;
       // ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/src/image" << std::setfill('0') <<std::setw(4) << count_3<<".png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
-      ofs << "<img src=\"/home/kochigami/ros/groovy/cultural_festival/diary/naonamida.jpg\""<< " "<<"height=\"320\" alt=\"test\" />" << std::endl;
+      ofs << "<img src=\""<<default_template_file_name <<"/diary/naonamida.jpg\""<< " "<<"height=\"320\" alt=\"test\" />" << std::endl;
       ofs << "</div>" <<std::endl;
       ofs << "<p align=\"center\">" << "なお、なでなでしてほしかったんだけど"<<"<br>"<< "</p>"<< std::endl;
       ofs <<"<p align=\"center\">"<<"<font color =\"indigo\" size=\"5\">"<< "なでてくれなかった"<< "</p>"<< std::endl;
@@ -329,8 +341,8 @@ public:
       ofs << "</body>" << std::endl;
       ofs << "</html>" << std::endl;
      
-     sprintf(diary_topic_name2, "diary_angry_nadenashi.html");
-      ss2 << "firefox /home/kochigami/ros/groovy/cultural_festival/diary/"<<diary_topic_name2;
+      sprintf(diary_topic_name2, "diary_angry_nadenashi.html");
+      ss2 << "firefox"<<" "<<default_template_file_name<<"/diary/"<<diary_topic_name2;
       diary_msg2.data=ss2.str();
       diary_pub.publish(diary_msg2);
       ROS_INFO("diary published");
@@ -346,7 +358,7 @@ public:
 	char my_friend[256];
 	char my_favorite[256];
 
-	sprintf(picture_name, "/home/kochigami/ros/groovy/cultural_festival/picture/test_image%04d.png",count2);
+	sprintf(picture_name, (default_template_file_name+std::string("/picture/test_image%04d.png")).c_str(),count2);
 	count2++;
 	cv::imwrite(picture_name,temp_img);
 	pic_count++;
@@ -359,7 +371,8 @@ public:
 	  // write html
 	  
 	  // ファイル出力ストリームの初期化
-	  sprintf(diary_name, "/home/kochigami/ros/groovy/cultural_festival/diary/diary%04d.html",count2);
+	  
+	  sprintf(diary_name, (default_template_file_name+std::string("/diary/diary%04d.html")).c_str(),count2);
 	  //std::ofstream ofs("/home/kochigami/ros/groovy/object_learn_using_sift/diary/test.html");
 	  std::ofstream ofs(diary_name);
 	  // ファイルに1行ずつ書き込み
@@ -372,7 +385,7 @@ public:
 	      ofs << "<style type=\"text/css\">" << std::endl;
 	      ofs << "<!--" << std::endl;
 	      ofs << "body   {" << std::endl;
-	      ofs << " background-image:url(\"/home/kochigami/ros/groovy/cultural_festival/diary/hana.jpg\");"<< std::endl;
+	      ofs << " background-image:url(\""<<default_template_file_name<<"/diary/hana.jpg\");"<< std::endl;
 	      ofs <<  "background-repeat:repeat;"<< std::endl;
 	      ofs << "}" << std::endl;
 	      ofs << "-->"<< std::endl;
@@ -387,7 +400,7 @@ public:
 	    ofs << "<div align=\"center\">"<<std::endl;
 	    //ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/src/image" << std::setfill('0') <<std::setw(4) << count_3<<".png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
 	    ofs << "<img src="<<"\"" << picture_name <<"\""<<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
-	    ofs << "<img src=\"/home/kochigami/ros/groovy/cultural_festival/diary/nao.JPG\"" <<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
+	    ofs << "<img src=\""<<default_template_file_name<<"/diary/nao.JPG\"" <<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
 	    ofs << "</div>" <<std::endl;
 	    ofs << "<p align=\"center\">" << "おともだちができたよ。"<<"<br>"<< "</p>"<< std::endl;
 	    ofs << "<p align=\"center\">" <<"<font color =\"navy\">"<< "なまえは"<< std::endl;
@@ -415,7 +428,7 @@ public:
 	      ofs << "<style type=\"text/css\">" << std::endl;
 	      ofs << "<!--" << std::endl;
 	      ofs << "body   {" << std::endl;
-	      ofs << " background-image:url(\"/home/kochigami/ros/groovy/cultural_festival/diary/bluebird.jpg\");"<< std::endl;
+	      ofs << " background-image:url(\""<<default_template_file_name<<"/diary/bluebird.jpg\");"<< std::endl;
 	      ofs <<  "background-repeat:repeat;"<< std::endl;
 	      ofs << "}" << std::endl;
 	      ofs << "-->"<< std::endl;
@@ -430,7 +443,7 @@ public:
 	    ofs << "<div align=\"center\">"<<std::endl;
 	    //ofs << "<img src=\"/home/kochigami/ros/groovy/object_learn_using_sift/src/image" << std::setfill('0') <<std::setw(4) << count_3<<".png\" width=\"240\" height=\"160\" alt=\"test\" />" << std::endl;
 	    ofs << "<img src="<<"\"" << picture_name <<"\""<<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
-	    ofs << "<img src=\"/home/kochigami/ros/groovy/cultural_festival/diary/nao2.JPG\"" <<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
+	    ofs << "<img src=\""<< default_template_file_name<<"/diary/nao2.JPG\"" <<" " <<"height=\"320\" alt=\"test\" />" << std::endl;
 	    ofs << "</div>" <<std::endl;
 	    ofs << "<p align=\"center\">" << "おともだちができたよ。"<<"<br>"<< "</p>"<< std::endl;
 	    ofs << "<p align=\"center\">" <<"<font color =\"mediumvioletred\">"<< "なまえは"<< std::endl;
@@ -500,7 +513,7 @@ public:
 	  std_msgs::String diary_msg, conversation_msg;
 	  sprintf(diary_topic_name, "diary%04d.html",count2);
 	  std::stringstream ss,st;
-	  ss << "firefox /home/kochigami/ros/groovy/cultural_festival/diary/"<<diary_topic_name;
+	  ss << "firefox"<<" "<< default_template_file_name <<"/diary/"<<diary_topic_name;
 	  diary_msg.data=ss.str();
 	  diary_pub.publish(diary_msg);
 	  ROS_INFO("diary published");
