@@ -1,6 +1,7 @@
 <launch>
   <env name = "PYTHONPATH" value="$(env PYTHONPATH)"/>
   <arg name="nao_ip" default="$(optenv NAO_IP 127.0.0.1)"/>
+  <arg name="launchpad" default="true" />
   <!--japanese character recognition by using sift-->
   <include file="$(find cultural_festival)/launch/nao_object_learn_using_sift.launch"/>
 
@@ -19,7 +20,8 @@
 
   
    <!--launchpad-->
-  <include file="$(find cultural_festival)/launch/launchpad_hiragana_sender.launch"/>
+  <include if="$(arg launchpad)"
+	   file="$(find cultural_festival)/launch/launchpad_hiragana_sender.launch"/>
 
   <!--subscribe japanese character topic and collect one character to one word-->
   <node name="hiragana_subscribe"

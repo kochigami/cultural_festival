@@ -234,6 +234,7 @@
 				   (send *ni* :play-soundfile "/home/nao/wav_test/wo.wav"))
 			       (if (string= japanese-char "ん")
 				   (send *ni* :play-soundfile "/home/nao/wav_test/n.wav"))
+			      
 			       (setq *name-list* nil)
 			       )
 			     )
